@@ -148,7 +148,7 @@ variable "ip_configurations" {
       tags              = optional(map(string), {})
     }), {})
   }))
-  default = null
+  default = {}
 }
 
 variable "local_network_gateways" {
@@ -209,7 +209,7 @@ variable "local_network_gateways" {
   }
 
   validation {
-    condition = alltrue([for k, v in var.local_network_gateways : contains(["IPSec", "Vnet2Vnet"], v.connection_config.type)])
+    condition = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : contains(["IPSec", "Vnet2Vnet"], v.connection_config.type)])
     error_message = "type possible values are IPSec or Vnet2Vnet."
   }
 }
