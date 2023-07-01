@@ -176,7 +176,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
 resource "azurerm_express_route_circuit_peering" "vgw" {
   for_each = local.express_route_circuit_peerings
 
-  peering_type                  = each.value.peering_type
+  peering_type                  = try(each.value.peering_type, "AzurePrivatePeering")
   express_route_circuit_name    = each.value.express_route_circuit_name
   resource_group_name           = var.resource_group_name
   vlan_id                       = each.value.vlan_id
