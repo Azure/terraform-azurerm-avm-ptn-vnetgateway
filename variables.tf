@@ -204,12 +204,12 @@ variable "local_network_gateways" {
   default = null
 
   validation {
-    condition     = alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
+    condition = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
     error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
   }
 
   validation {
-    condition     = alltrue([for k, v in var.local_network_gateways : contains(["IPSec", "Vnet2Vnet"], v.connection_config.type)])
+    condition = alltrue([for k, v in var.local_network_gateways : contains(["IPSec", "Vnet2Vnet"], v.connection_config.type)])
     error_message = "type possible values are IPSec or Vnet2Vnet."
   }
 }
@@ -247,7 +247,7 @@ variable "express_route_circuits" {
   default = null
 
   validation {
-    condition     = alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
+    condition = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
     error_message = "peering_type possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
   }
 }
