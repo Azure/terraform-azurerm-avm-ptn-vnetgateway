@@ -13,8 +13,8 @@ func TestExamplesBasic(t *testing.T) {
 	test_helper.RunE2ETest(t, "../../", "examples/basic", terraform.Options{
 		Upgrade: true,
 	}, func(t *testing.T, output test_helper.TerraformOutput) {
-		gotEchoText, ok := output["echo_text"].(string)
+		virtualNetworkGatewayId, ok := output["test_virtual_network_gateway_id"].(string)
 		assert.True(t, ok)
-		assert.Regexp(t, regexp.MustCompile("Hello, world!"), gotEchoText)
+		assert.Regexp(t, regexp.MustCompile("/subscriptions/.+/resourceGroups/.+/providers/Microsoft.Network/virtualNetworkGateways/.+"), virtualNetworkGatewayId)
 	})
 }
