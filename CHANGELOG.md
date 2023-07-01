@@ -6,7 +6,9 @@
 
 - Fix: ExpressRoute Peering [\#8](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/8) ([luke-taylor](https://github.com/luke-taylor))
 - Fix: Validation Checks [\#7](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/7) ([luke-taylor](https://github.com/luke-taylor))
+- Bump github.com/gruntwork-io/terratest from 0.41.19 to 0.43.4 in /test [\#6](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add Locals, Variables, Resources, and Outputs [\#4](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/4) ([luke-taylor](https://github.com/luke-taylor))
+- Bump github.com/stretchr/testify from 1.8.2 to 1.8.4 in /test [\#3](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 
 
