@@ -1,54 +1,21 @@
-variable "resource_group_name" {
-  description = "The name of the resource group."
-  type        = string
-}
-
 variable "location" {
+  type        = string
   description = "The Azure region where the resources will be deployed."
-  type        = string
 }
-
-variable "default_tags" {
-  description = "Tags to apply to all resources."
-  type        = map(string)
-  default     = {}
-}
-
-variable "virtual_network_name" {
-  description = "The name of the virtual network."
-  type        = string
-}
-
-variable "subnet_address_prefix" {
-  description = "The address prefix for the gateway subnet."
-  type        = string
-}
-
 
 variable "name" {
+  type        = string
   description = "The name of the virtual network gateway."
-  type        = string
 }
 
-variable "edge_zone" {
-  description = "The availability zone of the virtual network gateway. Only supported for AZ SKUs."
+variable "resource_group_name" {
   type        = string
-  default     = null
-}
-
-variable "type" {
-  description = "The type of the virtual network gateway, ExpressRoute or VPN."
-  type        = string
-
-  validation {
-    condition     = contains(["ExpressRoute", "Vpn"], var.type)
-    error_message = "type possible values are ExpressRoute or VPN."
-  }
+  description = "The name of the resource group."
 }
 
 variable "sku" {
-  description = "The SKU (size) of the virtual network gateway."
   type        = string
+  description = "The SKU (size) of the virtual network gateway."
 
   validation {
     condition     = contains(["Basic", "HighPerformance", "Standard", "UltraPerformance", "VpnGw1", "VpnGw2", "VpnGw3", "VpnGw4", "VpnGw5", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ", "VpnGw4AZ", "VpnGw5AZ"], var.sku)
@@ -56,87 +23,77 @@ variable "sku" {
   }
 }
 
-variable "route_table_creation_enabled" {
-  description = "Whether or not to create a route table associated with the Virtual Network Gateway Subnet."
-  type        = bool
-  default     = false
-}
-
-variable "route_table_name" {
-  description = "Name of the route table associated with Virtual Network Gateway Subnet."
+variable "subnet_address_prefix" {
   type        = string
-  default     = null
+  description = "The address prefix for the gateway subnet."
 }
 
-variable "route_table_tags" {
-  description = "Tags for the route table."
-  type        = map(string)
-  default     = {}
-}
-
-variable "route_table_bgp_route_propagation_enabled" {
-  description = "Whether or not to enable BGP route propagation on the route table."
-  type        = bool
-  default     = true
-}
-
-variable "vpn_generation" {
-  description = "value for the Generation for the Gateway, Valid values are 'Generation1', 'Generation2'. Options differ depending on SKU."
+variable "type" {
   type        = string
-  default     = null
+  description = "The type of the virtual network gateway, ExpressRoute or VPN."
 
   validation {
-    condition     = var.vpn_generation == null ? true : contains(["Generation1", "Generation2"], var.vpn_generation)
-    error_message = "vpn_generation possible values are 'Generation1', 'Generation2'. Options differ depending on SKU."
+    condition     = contains(["ExpressRoute", "Vpn"], var.type)
+    error_message = "type possible values are ExpressRoute or VPN."
   }
 }
 
-variable "tags" {
-  description = "Tags to apply to the virtual network gateway."
+variable "virtual_network_name" {
+  type        = string
+  description = "The name of the virtual network."
+}
+
+variable "default_tags" {
   type        = map(string)
   default     = {}
+  description = "Tags to apply to all resources."
 }
 
-variable "vpn_active_active_enabled" {
-  description = "Enable active-active mode for the virtual network gateway."
-  type        = bool
-  default     = false
-}
-
-variable "vpn_type" {
-  description = "The VPN type of the virtual network gateway."
+variable "edge_zone" {
   type        = string
-  default     = "RouteBased"
+  default     = null
+  description = "The availability zone of the virtual network gateway. Only supported for AZ SKUs."
+}
+
+variable "express_route_circuits" {
+  type = map(object({
+    connection_config = optional(object({
+      express_route_circuit_id     = string
+      authorization_key            = optional(string, null)
+      express_route_gateway_bypass = optional(bool, null)
+      name                         = optional(string, null)
+      routing_weight               = optional(number, null)
+      shared_key                   = optional(string, null)
+      tags                         = optional(map(string), null)
+    }), null)
+    peering_config = optional(object({
+      express_route_circuit_name    = string
+      peering_type                  = string
+      vlan_id                       = number
+      ipv4_enabled                  = optional(bool, null)
+      peer_asn                      = optional(number, null)
+      primary_peer_address_prefix   = optional(number, null)
+      secondary_peer_address_prefix = optional(string, null)
+      shared_key                    = optional(string, null)
+      route_filter_id               = optional(string, null)
+      microsoft_peering_config = optional(object({
+        advertised_communities     = optional(list(string), null)
+        advertised_public_prefixes = list(string)
+        customer_asn               = optional(number, null)
+        routing_registry_name      = optional(string, null)
+      }), null)
+    }), null)
+  }))
+  default     = null
+  description = "Express Route circuits configuration."
 
   validation {
-    condition     = contains(["PolicyBased", "RouteBased"], var.vpn_type)
-    error_message = "vpn_type possible values are PolicyBased or RouteBased."
+    condition     = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
+    error_message = "peering_type possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
   }
-}
-
-variable "vpn_bgp_enabled" {
-  description = "Enable BGP for the virtual network gateway."
-  type        = bool
-  default     = false
-}
-
-variable "vpn_private_ip_address_enabled" {
-  description = "Enable private IP address for the virtual network gateway for Virtual Network Gateway Connections. Only supported for AZ SKUs."
-  type        = bool
-  default     = null
-}
-
-variable "vpn_bgp_settings" {
-  description = "BGP settings for the virtual network gateway."
-  type = object({
-    asn         = optional(number, null)
-    peer_weight = optional(number, null)
-  })
-  default = null
 }
 
 variable "ip_configurations" {
-  description = "IP configurations for the virtual network gateway."
   type = map(object({
     ip_configuration_name        = optional(string, null)
     apipa_addresses              = optional(list(string), null)
@@ -148,11 +105,11 @@ variable "ip_configurations" {
       tags              = optional(map(string), {})
     }), {})
   }))
-  default = {}
+  default     = {}
+  description = "IP configurations for the virtual network gateway."
 }
 
 variable "local_network_gateways" {
-  description = "Local network gateways configuration."
   type = map(object({
     name            = optional(string, null)
     address_space   = optional(list(string), null)
@@ -201,55 +158,43 @@ variable "local_network_gateways" {
       ), null)
     }), null)
   }))
-  default = null
+  default     = null
+  description = "Local network gateways configuration."
 
   validation {
-    condition = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
     error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
-  }
-
-  validation {
-    condition = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : contains(["IPSec", "Vnet2Vnet"], v.connection_config.type)])
-    error_message = "type possible values are IPSec or Vnet2Vnet."
   }
 }
 
-variable "express_route_circuits" {
-  description = "Express Route circuits configuration."
-  type = map(object({
-    connection_config = optional(object({
-      express_route_circuit_id     = string
-      authorization_key            = optional(string, null)
-      express_route_gateway_bypass = optional(bool, null)
-      name                         = optional(string, null)
-      routing_weight               = optional(number, null)
-      shared_key                   = optional(string, null)
-      tags                         = optional(map(string), null)
-    }), null)
-    peering_config = optional(object({
-      express_route_circuit_name    = string
-      peering_type                  = string
-      vlan_id                       = number
-      ipv4_enabled                  = optional(bool, null)
-      peer_asn                      = optional(number, null)
-      primary_peer_address_prefix   = optional(number, null)
-      secondary_peer_address_prefix = optional(string, null)
-      shared_key                    = optional(string, null)
-      route_filter_id               = optional(string, null)
-      microsoft_peering_config = optional(object({
-        advertised_communities     = optional(list(string), null)
-        advertised_public_prefixes = list(string)
-        customer_asn               = optional(number, null)
-        routing_registry_name      = optional(string, null)
-      }), null)
-    }), null)
-  }))
-  default = null
+variable "route_table_bgp_route_propagation_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether or not to enable BGP route propagation on the route table."
+}
 
-  validation {
-    condition = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
-    error_message = "peering_type possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
-  }
+variable "route_table_creation_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether or not to create a route table associated with the Virtual Network Gateway Subnet."
+}
+
+variable "route_table_name" {
+  type        = string
+  default     = null
+  description = "Name of the route table associated with Virtual Network Gateway Subnet."
+}
+
+variable "route_table_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags for the route table."
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to the virtual network gateway."
 }
 
 variable "tracing_tags_enabled" {
@@ -264,4 +209,53 @@ variable "tracing_tags_prefix" {
   default     = "avm_"
   description = "Default prefix for generated tracing tags"
   nullable    = false
+}
+
+variable "vpn_active_active_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable active-active mode for the virtual network gateway."
+}
+
+variable "vpn_bgp_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable BGP for the virtual network gateway."
+}
+
+variable "vpn_bgp_settings" {
+  type = object({
+    asn         = optional(number, null)
+    peer_weight = optional(number, null)
+  })
+  default     = null
+  description = "BGP settings for the virtual network gateway."
+}
+
+variable "vpn_generation" {
+  type        = string
+  default     = null
+  description = "value for the Generation for the Gateway, Valid values are 'Generation1', 'Generation2'. Options differ depending on SKU."
+
+  validation {
+    condition     = var.vpn_generation == null ? true : contains(["Generation1", "Generation2"], var.vpn_generation)
+    error_message = "vpn_generation possible values are 'Generation1', 'Generation2'. Options differ depending on SKU."
+  }
+}
+
+variable "vpn_private_ip_address_enabled" {
+  type        = bool
+  default     = null
+  description = "Enable private IP address for the virtual network gateway for Virtual Network Gateway Connections. Only supported for AZ SKUs."
+}
+
+variable "vpn_type" {
+  type        = string
+  default     = "RouteBased"
+  description = "The VPN type of the virtual network gateway."
+
+  validation {
+    condition     = contains(["PolicyBased", "RouteBased"], var.vpn_type)
+    error_message = "vpn_type possible values are PolicyBased or RouteBased."
+  }
 }
