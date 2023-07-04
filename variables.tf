@@ -57,8 +57,8 @@ variable "edge_zone" {
 
 variable "express_route_circuits" {
   type = map(object({
+    express_route_circuit_id = string
     connection_config = optional(object({
-      express_route_circuit_id     = string
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
       name                         = optional(string, null)
@@ -67,7 +67,6 @@ variable "express_route_circuits" {
       tags                         = optional(map(string), null)
     }), null)
     peering_config = optional(object({
-      express_route_circuit_name    = string
       peering_type                  = string
       vlan_id                       = number
       ipv4_enabled                  = optional(bool, null)
@@ -105,7 +104,7 @@ variable "ip_configurations" {
       tags              = optional(map(string), {})
     }), {})
   }))
-  default     = {}
+  default     = null
   description = "IP configurations for the virtual network gateway."
 }
 
