@@ -4,6 +4,8 @@
 
 **Merged pull requests:**
 
+- Update Express Route Circuits Config [\#10](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/10) ([luke-taylor](https://github.com/luke-taylor))
+- Build\(deps\): Bump github.com/gruntwork-io/terratest from 0.43.4 to 0.43.6 in /test [\#9](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/9) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Fix: ExpressRoute Peering [\#8](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/8) ([luke-taylor](https://github.com/luke-taylor))
 - Fix: Validation Checks [\#7](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/7) ([luke-taylor](https://github.com/luke-taylor))
 - Bump github.com/gruntwork-io/terratest from 0.41.19 to 0.43.4 in /test [\#6](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
