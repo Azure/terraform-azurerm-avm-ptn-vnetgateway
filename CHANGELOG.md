@@ -11,6 +11,7 @@
 - Bump github.com/gruntwork-io/terratest from 0.41.19 to 0.43.4 in /test [\#6](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add Locals, Variables, Resources, and Outputs [\#4](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/4) ([luke-taylor](https://github.com/luke-taylor))
 - Bump github.com/stretchr/testify from 1.8.2 to 1.8.4 in /test [\#3](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump github.com/Azure/terraform-module-test-helper from 0.13.0 to 0.14.0 in /test [\#2](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/2) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 
 
