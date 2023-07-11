@@ -47,6 +47,7 @@ variable "default_tags" {
   type        = map(string)
   default     = {}
   description = "Tags to apply to all resources."
+  nullable    = false
 }
 
 variable "edge_zone" {
@@ -64,7 +65,7 @@ variable "express_route_circuits" {
       name                         = optional(string, null)
       routing_weight               = optional(number, null)
       shared_key                   = optional(string, null)
-      tags                         = optional(map(string), null)
+      tags                         = optional(map(string), {})
     }), null)
     peering_config = optional(object({
       peering_type                  = string
@@ -83,8 +84,9 @@ variable "express_route_circuits" {
       }), null)
     }), null)
   }))
-  default     = null
+  default     = {}
   description = "Express Route circuits configuration."
+  nullable    = false
 
   validation {
     condition     = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
@@ -94,9 +96,9 @@ variable "express_route_circuits" {
 
 variable "ip_configurations" {
   type = map(object({
-    ip_configuration_name        = optional(string, null)
-    apipa_addresses              = optional(list(string), null)
-    private_ip_allocation_method = optional(string, "Dynamic")
+    ip_configuration_name         = optional(string, null)
+    apipa_addresses               = optional(list(string), null)
+    private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
       name              = optional(string, null)
       allocation_method = optional(string, "Dynamic")
@@ -104,8 +106,9 @@ variable "ip_configurations" {
       tags              = optional(map(string), {})
     }), {})
   }))
-  default     = null
+  default     = {}
   description = "IP configurations for the virtual network gateway."
+  nullable    = false
 }
 
 variable "local_network_gateways" {
@@ -114,7 +117,7 @@ variable "local_network_gateways" {
     address_space   = optional(list(string), null)
     gateway_fqdn    = optional(string, null)
     gateway_address = optional(string, null)
-    tags            = optional(map(string), null)
+    tags            = optional(map(string), {})
     bgp_settings = optional(object({
       asn                 = number
       bgp_peering_address = string
@@ -157,8 +160,9 @@ variable "local_network_gateways" {
       ), null)
     }), null)
   }))
-  default     = null
+  default     = {}
   description = "Local network gateways configuration."
+  nullable    = false
 
   validation {
     condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
@@ -170,12 +174,15 @@ variable "route_table_bgp_route_propagation_enabled" {
   type        = bool
   default     = true
   description = "Whether or not to enable BGP route propagation on the route table."
+  nullable    = false
+
 }
 
 variable "route_table_creation_enabled" {
   type        = bool
   default     = false
   description = "Whether or not to create a route table associated with the Virtual Network Gateway Subnet."
+  nullable    = false
 }
 
 variable "route_table_name" {
@@ -188,12 +195,14 @@ variable "route_table_tags" {
   type        = map(string)
   default     = {}
   description = "Tags for the route table."
+  nullable    = false
 }
 
 variable "tags" {
   type        = map(string)
   default     = {}
   description = "Tags to apply to the virtual network gateway."
+  nullable    = false
 }
 
 variable "tracing_tags_enabled" {
@@ -214,12 +223,14 @@ variable "vpn_active_active_enabled" {
   type        = bool
   default     = false
   description = "Enable active-active mode for the virtual network gateway."
+  nullable    = false
 }
 
 variable "vpn_bgp_enabled" {
   type        = bool
   default     = false
   description = "Enable BGP for the virtual network gateway."
+  nullable    = false
 }
 
 variable "vpn_bgp_settings" {
@@ -252,6 +263,7 @@ variable "vpn_type" {
   type        = string
   default     = "RouteBased"
   description = "The VPN type of the virtual network gateway."
+  nullable    = false
 
   validation {
     condition     = contains(["PolicyBased", "RouteBased"], var.vpn_type)

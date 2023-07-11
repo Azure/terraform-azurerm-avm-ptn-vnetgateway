@@ -77,28 +77,28 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   vpn_type = var.vpn_type
 
   dynamic "ip_configuration" {
-    for_each = local.ip_configurations
+    for_each = local.gateway_ip_configurations
 
     content {
       public_ip_address_id          = azurerm_public_ip.vgw[ip_configuration.key].id
       subnet_id                     = azurerm_subnet.vgw.id
-      name                          = coalesce(ip_configuration.value.ip_configuration_name, "vnetGatewayConfig${ip_configuration.key}")
-      private_ip_address_allocation = ip_configuration.value.private_ip_allocation_method
+      name                          = ip_configuration.value.name
+      private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
     }
   }
   dynamic "bgp_settings" {
-    for_each = var.vpn_bgp_settings == null && alltrue([for ip_configuration in local.ip_configurations : ip_configuration.apipa_addresses == null]) ? [] : ["BgpSettings"]
+    for_each = local.bgp_settings
 
     content {
-      asn         = try(var.vpn_bgp_settings.asn, null)
-      peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
+      asn         = bgp_settings.value.asn
+      peer_weight = bgp_settings.value.peer_weight
 
       dynamic "peering_addresses" {
-        for_each = alltrue([for ip_configuration in local.ip_configurations : ip_configuration.apipa_addresses == null]) ? {} : local.ip_configurations
+        for_each = bgp_settings.value.peering_addresses
 
         content {
           apipa_addresses       = peering_addresses.value.apipa_addresses
-          ip_configuration_name = coalesce(peering_addresses.value.ip_configuration_name, "vnetGatewayConfig${peering_addresses.key}")
+          ip_configuration_name = peering_addresses.value.ip_configuration_name
         }
       }
     }
