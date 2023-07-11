@@ -1,32 +1,4 @@
 locals {
-  default_ip_configuration = {
-    ip_configuration_name         = null
-    apipa_addresses               = null
-    private_ip_address_allocation = "Dynamic"
-    public_ip = {
-      name              = null
-      allocation_method = "Dynamic"
-      sku               = "Basic"
-      tags              = null
-    }
-  }
-  ip_configurations = (length(var.ip_configurations) == 0 ?
-    var.vpn_active_active_enabled ?
-    {
-      "001" = local.default_ip_configuration
-      "002" = local.default_ip_configuration
-    } :
-    {
-      "001" = local.default_ip_configuration
-    }
-    : var.ip_configurations
-  )
-  gateway_ip_configurations = {
-    for k, v in local.ip_configurations : k => {
-      name                          = coalesce(v.ip_configuration_name, "vnetGatewayConfig${k}")
-      private_ip_address_allocation = v.private_ip_address_allocation
-    }
-  }
   bgp_settings = (var.vpn_bgp_settings == null && alltrue([for ip_configuration in local.ip_configurations : ip_configuration.apipa_addresses == null]) ? {} :
     {
       BgpSettings = {
@@ -41,6 +13,34 @@ locals {
         }
       }
     }
+  )
+  default_ip_configuration = {
+    ip_configuration_name         = null
+    apipa_addresses               = null
+    private_ip_address_allocation = "Dynamic"
+    public_ip = {
+      name              = null
+      allocation_method = "Dynamic"
+      sku               = "Basic"
+      tags              = null
+    }
+  }
+  gateway_ip_configurations = {
+    for k, v in local.ip_configurations : k => {
+      name                          = coalesce(v.ip_configuration_name, "vnetGatewayConfig${k}")
+      private_ip_address_allocation = v.private_ip_address_allocation
+    }
+  }
+  ip_configurations = (length(var.ip_configurations) == 0 ?
+    var.vpn_active_active_enabled ?
+    {
+      "001" = local.default_ip_configuration
+      "002" = local.default_ip_configuration
+    } :
+    {
+      "001" = local.default_ip_configuration
+    }
+    : var.ip_configurations
   )
 }
 

@@ -175,7 +175,6 @@ variable "route_table_bgp_route_propagation_enabled" {
   default     = true
   description = "Whether or not to enable BGP route propagation on the route table."
   nullable    = false
-
 }
 
 variable "route_table_creation_enabled" {
