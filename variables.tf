@@ -339,6 +339,46 @@ variable "vpn_private_ip_address_enabled" {
   description = "Enable private IP address for the Virtual Network Gateway for Virtual Network Gateway Connections. Only supported for AZ SKUs."
 }
 
+variable "vpn_point_to_site" {
+  type = object({
+    address_space         = list(string)
+    aad_tenant            = optional(string, null)
+    aad_audience          = optional(string, null)
+    aad_issuer            = optional(string, null)
+    radius_server_address = optional(string, null)
+    radius_server_secret  = optional(string, null)
+    root_certificate = optional(map(object({
+      name             = string
+      public_cert_data = string
+    })), {})
+    revoked_certificate = optional(map(object({
+      name       = string
+      thumbprint = string
+    })), {})
+    vpn_client_protocols = optional(list(string), null)
+    vpn_auth_types       = optional(list(string), null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Point to site configuration for the virtual network gateway.
+
+- `address_space` - (Required) Address space for the virtual network gateway.
+- `aad_tenant` - (Optional) The AAD tenant to use for authentication.
+- `aad_audience` - (Optional) The AAD audience to use for authentication.
+- `aad_issuer` - (Optional) The AAD issuer to use for authentication.
+- `radius_server_address` - (Optional) The address of the radius server.
+- `radius_server_secret` - (Optional) The secret of the radius server.
+- `root_certificate` - (Optional) The root certificate of the virtual network gateway.
+  - `name` - (Required) The name of the root certificate.
+  - `public_cert_data` - (Required) The public certificate data.
+- `revoked_certificate` - (Optional) The revoked certificate of the virtual network gateway.
+  - `name` - (Required) The name of the revoked certificate.
+  - `thumbprint` - (Required) The thumbprint of the revoked certificate.
+- `vpn_client_protocols` - (Optional) The VPN client protocols.
+- `vpn_auth_types` - (Optional) The VPN authentication types.
+DESCRIPTION
+}
+
 variable "vpn_type" {
   type        = string
   default     = "RouteBased"

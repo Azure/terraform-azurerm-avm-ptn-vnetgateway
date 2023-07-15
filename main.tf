@@ -104,6 +104,39 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     }
   }
 
+  dynamic "vpn_client_configuration" {
+    for_each = var.vpn_point_to_site == null ? [] : ["VpnClientConfiguration"]
+
+    content {
+      address_space         = var.vpn_point_to_site.address_space
+      aad_tenant            = var.vpn_point_to_site.aad_tenant
+      aad_audience          = var.vpn_point_to_site.aad_audience
+      aad_issuer            = var.vpn_point_to_site.aad_issuer
+      radius_server_address = var.vpn_point_to_site.radius_server_address
+      radius_server_secret  = var.vpn_point_to_site.radius_server_secret
+      vpn_client_protocols  = var.vpn_point_to_site.vpn_client_protocols
+      vpn_auth_types        = var.vpn_point_to_site.vpn_auth_types
+
+      dynamic "root_certificate" {
+        for_each = var.vpn_point_to_site.root_certificate
+
+        content {
+          name             = root_certificate.value.name
+          public_cert_data = root_certificate.value.public_cert_data
+        }
+      }
+
+      dynamic "revoked_certificate" {
+        for_each = var.vpn_point_to_site.revoked_certificate
+
+        content {
+          name       = revoked_certificate.value.name
+          thumbprint = revoked_certificate.value.thumbprint
+        }
+      }
+    }
+  }
+
   depends_on = [
     azurerm_subnet.vgw,
     azurerm_public_ip.vgw
