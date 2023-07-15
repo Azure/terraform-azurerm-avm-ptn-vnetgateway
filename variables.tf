@@ -333,12 +333,6 @@ variable "vpn_generation" {
   }
 }
 
-variable "vpn_private_ip_address_enabled" {
-  type        = bool
-  default     = null
-  description = "Enable private IP address for the Virtual Network Gateway for Virtual Network Gateway Connections. Only supported for AZ SKUs."
-}
-
 variable "vpn_point_to_site" {
   type = object({
     address_space         = list(string)
@@ -377,6 +371,12 @@ Point to site configuration for the virtual network gateway.
 - `vpn_client_protocols` - (Optional) The VPN client protocols.
 - `vpn_auth_types` - (Optional) The VPN authentication types.
 DESCRIPTION
+}
+
+variable "vpn_private_ip_address_enabled" {
+  type        = bool
+  default     = null
+  description = "Enable private IP address for the Virtual Network Gateway for Virtual Network Gateway Connections. Only supported for AZ SKUs."
 }
 
 variable "vpn_type" {

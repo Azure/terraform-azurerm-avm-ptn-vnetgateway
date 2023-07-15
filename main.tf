@@ -19,7 +19,7 @@ resource "azurerm_route_table" "vgw" {
     avm_git_org              = "luke-taylor"
     avm_git_repo             = "terraform-azurerm-alz-vgw"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "2849d8e9-8fb3-4184-80c1-c5e10500ddef"
+    avm_yor_trace            = "7956c405-a3a4-4ca2-a316-800de7641dad"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -50,7 +50,7 @@ resource "azurerm_public_ip" "vgw" {
     avm_git_org              = "luke-taylor"
     avm_git_repo             = "terraform-azurerm-alz-vgw"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "e7ecb24d-248c-4202-af38-4cdec03a867c"
+    avm_yor_trace            = "251b162b-6294-4c63-a19d-4d87730f8812"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -66,13 +66,13 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   generation                 = var.vpn_generation
   private_ip_address_enabled = var.vpn_private_ip_address_enabled
   tags = merge(var.default_tags, var.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "65e0c6671887b8ae433f40b3bddfd8294c3fd619"
+    avm_git_commit           = "f4d795487dd08e721ce03e7dc1f7806fdd148c93"
     avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-11 16:05:12"
+    avm_git_last_modified_at = "2023-07-15 19:38:46"
     avm_git_org              = "luke-taylor"
     avm_git_repo             = "terraform-azurerm-alz-vgw"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "d8e46482-8bfb-4d97-bd4f-3f68c974e527"
+    avm_yor_trace            = "920cbfc1-ba98-4f5a-830d-9a40ad35aa59"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   vpn_type = var.vpn_type
 
@@ -103,28 +103,18 @@ resource "azurerm_virtual_network_gateway" "vgw" {
       }
     }
   }
-
   dynamic "vpn_client_configuration" {
     for_each = var.vpn_point_to_site == null ? [] : ["VpnClientConfiguration"]
 
     content {
       address_space         = var.vpn_point_to_site.address_space
-      aad_tenant            = var.vpn_point_to_site.aad_tenant
       aad_audience          = var.vpn_point_to_site.aad_audience
       aad_issuer            = var.vpn_point_to_site.aad_issuer
+      aad_tenant            = var.vpn_point_to_site.aad_tenant
       radius_server_address = var.vpn_point_to_site.radius_server_address
       radius_server_secret  = var.vpn_point_to_site.radius_server_secret
-      vpn_client_protocols  = var.vpn_point_to_site.vpn_client_protocols
       vpn_auth_types        = var.vpn_point_to_site.vpn_auth_types
-
-      dynamic "root_certificate" {
-        for_each = var.vpn_point_to_site.root_certificate
-
-        content {
-          name             = root_certificate.value.name
-          public_cert_data = root_certificate.value.public_cert_data
-        }
-      }
+      vpn_client_protocols  = var.vpn_point_to_site.vpn_client_protocols
 
       dynamic "revoked_certificate" {
         for_each = var.vpn_point_to_site.revoked_certificate
@@ -132,6 +122,14 @@ resource "azurerm_virtual_network_gateway" "vgw" {
         content {
           name       = revoked_certificate.value.name
           thumbprint = revoked_certificate.value.thumbprint
+        }
+      }
+      dynamic "root_certificate" {
+        for_each = var.vpn_point_to_site.root_certificate
+
+        content {
+          name             = root_certificate.value.name
+          public_cert_data = root_certificate.value.public_cert_data
         }
       }
     }
@@ -159,7 +157,7 @@ resource "azurerm_local_network_gateway" "vgw" {
     avm_git_org              = "luke-taylor"
     avm_git_repo             = "terraform-azurerm-alz-vgw"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "f6bab72d-85e6-4bf6-97e9-91c156af8c44"
+    avm_yor_trace            = "83a2891c-29d2-49da-83e6-d61f8d1868ce"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 
   dynamic "bgp_settings" {
@@ -202,7 +200,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
     avm_git_org              = "luke-taylor"
     avm_git_repo             = "terraform-azurerm-alz-vgw"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "e291a4e8-2a55-4c19-8040-faa85adbfb6f"
+    avm_yor_trace            = "fd896bba-d5ca-4b7c-93ff-e8246c957e55"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
