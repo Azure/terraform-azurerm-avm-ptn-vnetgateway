@@ -57,10 +57,6 @@ locals {
 }
 
 locals {
-  local_network_gateways = var.local_network_gateways != null ? var.local_network_gateways : {}
-}
-
-locals {
   erc_virtual_network_gateway_connections = {
     for k, v in var.express_route_circuits : "erc-${k}" => merge(
       v.connection_config,

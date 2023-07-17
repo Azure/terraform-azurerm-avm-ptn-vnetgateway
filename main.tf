@@ -142,7 +142,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
 }
 
 resource "azurerm_local_network_gateway" "vgw" {
-  for_each = local.local_network_gateways
+  for_each = var.local_network_gateways
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")

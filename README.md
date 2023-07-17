@@ -1,23 +1,55 @@
-# Microsoft Verified Terraform Module
+# terraform-azurerm-vnet-gateway
+This module is designed to deploy an Azure Virtual Network Gateway and several auxillary resources associated to it. 
 
-The Verified Terraform module is a template repository to help developers create their own Terraform Module.
+## Features 
+- Virtual Network Gateway: 
+    - VPN Gateway or ExpressRoute Gateway. 
+    - Active-Active or Single.
+    - Deployment of `GatewaySubnet`.
+- Route Table 
+    - Optional deployment of Route Table on the Gateway Subnet.
+- Local Network Gateway:
+    - Optional deployment of `n` Local Network Gateways.
+    - Optional deployment of `n` Virtual Network Gateway Connections for Local Network Gateways. 
+- ExpressRoute Circuit:
+    - Configure peering on `n` pre-provisioned ExpressRoute Circuits.
+    - Optional deployment of `n` Virtual Network Gateway Connections for ExpressRoute Circuits.
 
-As we've used Microsoft 1ES Runners Pool as our acceptance test runner, **only Microsoft members could use this template for now**.
+## Example 
+```hcl
+resource "azurerm_resource_group" "rg" {
+  location = "uksouth"
+  name     = "rg-connectivity-uksouth-prod"
+}
 
-Enjoy it by following steps:
+resource "azurerm_virtual_network" "vnet" {
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.rg.location
+  name                = "vnet-uksouth-prod"
+  resource_group_name = azurerm_resource_group.rg.name
+}
 
-1. Use [this template](https://github.com/Azure/terraform-verified-module) to create your repository.
-2. Read [Onboard 1ES hosted Github Runners Pool through Azure Portal](https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/1es-github-runners/createpoolportal), install [1ES Resource Management](https://github.com/apps/1es-resource-management) on your repo.
-3. Add a Github [Environment](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment) named **acctests** in your repo, setup [**Required Reviewers**](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#required-reviewers).
-4. Update [`acc-test.yaml`](.github/workflows/acc-test.yaml), modify `runs-on: [self-hosted, 1ES.Pool=<YOUR_REPO_NAME>]` with your 1es runners' pool name (basically it's your repo's name).
-5. Write Terraform code in a new branch.
-6. Run `docker run --rm -v ${pwd}:/src -w /src mcr.microsoft.com/azterraform:latest make pre-commit` to format the code.
-7. Run `docker run --rm -v $(pwd):/src -w /src mcr.microsoft.com/azterraform:latest make pr-check` to run the check in local.
-8. Create a pull request for the main branch.
+module "vgw" {
+  source  = "Azure/vnet-gateway/azure"
+  version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
+
+  location              = "uksouth"
+  name                  = "vgw-uksouth-prod"
+  resource_group_name   = azurerm_resource_group.rg.name
+  sku                   = "VpnGw1"
+  subnet_address_prefix = "10.0.0.1/24"
+  type                  = "Vpn"
+  virtual_network_name  = azurerm_virtual_network.vnet.name
+}
+```
+# Contributing 
+1. Write Terraform code in a new branch.
+2. Run `docker run --rm -v ${pwd}:/src -w /src mcr.microsoft.com/azterraform:latest make pre-commit` to format the code.
+3. Run `docker run --rm -v $(pwd):/src -w /src mcr.microsoft.com/azterraform:latest make pr-check` to run the check locally.
+4. Create a pull request for the main branch.
     * CI pr-check will be executed automatically.
     * Once pr-check was passed, with manually approval, the e2e test and version upgrade test would be executed.
-9. Merge pull request.
-10. Enjoy it!
+5. Merge pull request.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -83,11 +115,11 @@ No modules.
 
 ## Outputs
 
-| Name                                                                                                                                 | Description                                                                              |
-|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| <a name="output_local_network_gateway_ids"></a> [local\_network\_gateway\_ids](#output\_local\_network\_gateway\_ids)                | value for local\_network\_gateway\_ids. The IDs of the local network gateways.           |
-| <a name="output_public_ip_address_ids"></a> [public\_ip\_address\_ids](#output\_public\_ip\_address\_ids)                            | value for public\_ip\_address\_ids. The IDs of the public IP addresses.                  |
-| <a name="output_route_table_name"></a> [route\_table\_name](#output\_route\_table\_name)                                             | value for the name of the route table.                                                   |
-| <a name="output_virtual_network_connection_ids"></a> [virtual\_network\_connection\_ids](#output\_virtual\_network\_connection\_ids) | value for virtual\_network\_connection\_ids. The IDs of the virtual network connections. |
-| <a name="output_virtual_network_gateway_id"></a> [virtual\_network\_gateway\_id](#output\_virtual\_network\_gateway\_id)             | value for virtual\_network\_gateway\_id. The ID of the virtual network gateway.          |
+| Name                                                                                                                                                | Description                                                                         |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| <a name="output_local_network_gateways"></a> [local\_network\_gateways](#output\_local\_network\_gateways)                                          | A curated output of the Local Network Gateways created by this module.              |
+| <a name="output_public_ip_addresses"></a> [public\_ip\_addresses](#output\_public\_ip\_addresses)                                                   | A curated output of the Public IP Addresses created by this module.                 |
+| <a name="output_route_table"></a> [route\_table](#output\_route\_table)                                                                             | A curated output of the Route Table created by this module.                         |
+| <a name="output_virtual_network_gateway"></a> [virtual\_network\_gateway](#output\_virtual\_network\_gateway)                                       | A curated output of the Virtual Network Gateway created by this module.             |
+| <a name="output_virtual_network_gateway_connections"></a> [virtual\_network\_gateway\_connections](#output\_virtual\_network\_gateway\_connections) | A curated output of the Virtual Network Gateway Connections created by this module. |
 <!-- END_TF_DOCS -->

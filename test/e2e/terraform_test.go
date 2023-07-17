@@ -16,5 +16,8 @@ func TestExamplesBasic(t *testing.T) {
 		virtualNetworkGatewayId, ok := output["test_virtual_network_gateway_id"].(string)
 		assert.True(t, ok)
 		assert.Regexp(t, regexp.MustCompile("/subscriptions/.+/resourceGroups/.+/providers/Microsoft.Network/virtualNetworkGateways/.+"), virtualNetworkGatewayId)
+		publicIpAddressId, ok := output["test_public_ip_address_id"].(string)
+		assert.True(t, ok)
+		assert.Regexp(t, regexp.MustCompile("/subscriptions/.+/resourceGroups/.+/providers/Microsoft.Network/publicIPAddresses/.+"), publicIpAddressId)
 	})
 }

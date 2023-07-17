@@ -1,30 +1,56 @@
-output "local_network_gateway_ids" {
-  description = "value for local_network_gateway_ids. The IDs of the local network gateways."
+output "local_network_gateways" {
+  description = "A curated output of the Local Network Gateways created by this module."
   value = {
-    for local_network_gateway in azurerm_local_network_gateway.vgw : local_network_gateway.name => local_network_gateway.id
+    for k, v in azurerm_local_network_gateway.vgw : k => {
+      id   = v.id
+      name = v.name
+    }
   }
 }
 
-output "public_ip_address_ids" {
-  description = "value for public_ip_address_ids. The IDs of the public IP addresses."
+output "public_ip_addresses" {
+  description = "A curated output of the Public IP Addresses created by this module."
   value = {
-    for public_ip_address in azurerm_public_ip.vgw : public_ip_address.name => public_ip_address.id
+    for k, v in azurerm_public_ip.vgw : k => {
+      id         = v.id
+      ip_address = try(v.ip_address, null)
+      name       = v.name
+    }
   }
 }
 
-output "route_table_name" {
-  description = "value for the name of the route table."
-  value       = try(azurerm_route_table.vgw[0].name, null)
-}
-
-output "virtual_network_connection_ids" {
-  description = "value for virtual_network_connection_ids. The IDs of the virtual network connections."
+output "route_table" {
+  description = "A curated output of the Route Table created by this module."
   value = {
-    for virtual_network_connection in azurerm_virtual_network_gateway_connection.vgw : virtual_network_connection.name => virtual_network_connection.id
+    id   = try(azurerm_route_table.vgw[0].id, null)
+    name = try(azurerm_route_table.vgw[0].name, null)
+
   }
 }
 
-output "virtual_network_gateway_id" {
-  description = "value for virtual_network_gateway_id. The ID of the virtual network gateway."
-  value       = azurerm_virtual_network_gateway.vgw.id
+output "virtual_network_gateway_connections" {
+  description = "A curated output of the Virtual Network Gateway Connections created by this module."
+  value = {
+    erc = {
+      for k, v in azurerm_virtual_network_gateway_connection.vgw : trimprefix(k, "erc-") => {
+        id   = v.id
+        name = v.name
+      } if substr(k, 0, 4) == "erc-"
+    }
+    lgw = {
+      for k, v in azurerm_virtual_network_gateway_connection.vgw : trimprefix(k, "lgw-") => {
+        id   = v.id
+        name = v.name
+      } if substr(k, 0, 4) == "lgw-"
+    }
+  }
+}
+
+output "virtual_network_gateway" {
+  description = "A curated output of the Virtual Network Gateway created by this module."
+  value = {
+    bgp_settings = try(azurerm_virtual_network_gateway.vgw.bgp_settings, null)
+    id           = azurerm_virtual_network_gateway.vgw.id
+    name         = azurerm_virtual_network_gateway.vgw.name
+  }
 }
