@@ -4,6 +4,7 @@
 
 **Merged pull requests:**
 
+- Update Locals, Outputs and Readme [\#16](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/16) ([luke-taylor](https://github.com/luke-taylor))
 - Add Point to Site Configuration [\#14](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/14) ([luke-taylor](https://github.com/luke-taylor))
 - Update `variables.tf` Descriptions   [\#13](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/13) ([luke-taylor](https://github.com/luke-taylor))
 - Code Logic Refactor [\#12](https://github.com/luke-taylor/terraform-azurerm-alz-vgw/pull/12) ([luke-taylor](https://github.com/luke-taylor))

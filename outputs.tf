@@ -28,6 +28,15 @@ output "route_table" {
   }
 }
 
+output "virtual_network_gateway" {
+  description = "A curated output of the Virtual Network Gateway created by this module."
+  value = {
+    bgp_settings = try(azurerm_virtual_network_gateway.vgw.bgp_settings, null)
+    id           = azurerm_virtual_network_gateway.vgw.id
+    name         = azurerm_virtual_network_gateway.vgw.name
+  }
+}
+
 output "virtual_network_gateway_connections" {
   description = "A curated output of the Virtual Network Gateway Connections created by this module."
   value = {
@@ -43,14 +52,5 @@ output "virtual_network_gateway_connections" {
         name = v.name
       } if substr(k, 0, 4) == "lgw-"
     }
-  }
-}
-
-output "virtual_network_gateway" {
-  description = "A curated output of the Virtual Network Gateway created by this module."
-  value = {
-    bgp_settings = try(azurerm_virtual_network_gateway.vgw.bgp_settings, null)
-    id           = azurerm_virtual_network_gateway.vgw.id
-    name         = azurerm_virtual_network_gateway.vgw.name
   }
 }
