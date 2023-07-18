@@ -1,6 +1,7 @@
 variable "location" {
   type        = string
   description = "The Azure region where the resources will be deployed."
+
 }
 
 variable "name" {
@@ -8,9 +9,9 @@ variable "name" {
   description = "The name of the Virtual Network Gateway."
 }
 
-variable "resource_group_name" {
+variable "virtual_network_resource_group_name" {
   type        = string
-  description = "The name of the resource group."
+  description = "The name of the Virtual Network's Resource Group."
 }
 
 variable "sku" {
