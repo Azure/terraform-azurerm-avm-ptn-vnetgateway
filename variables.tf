@@ -1,17 +1,11 @@
 variable "location" {
   type        = string
   description = "The Azure region where the resources will be deployed."
-
 }
 
 variable "name" {
   type        = string
   description = "The name of the Virtual Network Gateway."
-}
-
-variable "virtual_network_resource_group_name" {
-  type        = string
-  description = "The name of the Virtual Network's Resource Group."
 }
 
 variable "sku" {
@@ -42,6 +36,11 @@ variable "type" {
 variable "virtual_network_name" {
   type        = string
   description = "The name of the Virtual Network."
+}
+
+variable "virtual_network_resource_group_name" {
+  type        = string
+  description = "The name of the Virtual Network's Resource Group."
 }
 
 variable "default_tags" {
