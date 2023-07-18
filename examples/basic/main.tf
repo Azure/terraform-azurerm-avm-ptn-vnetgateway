@@ -18,7 +18,7 @@ module "vgw" {
   name                  = "vgw-uksouth-prod"
   resource_group_name   = azurerm_resource_group.rg.name
   sku                   = "VpnGw1"
-  subnet_address_prefix = "10.0.0.1/24"
+  subnet_address_prefix = "10.0.1.0/24"
   type                  = "Vpn"
   virtual_network_name  = azurerm_virtual_network.vnet.name
 }
