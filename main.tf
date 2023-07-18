@@ -16,10 +16,10 @@ resource "azurerm_route_table" "vgw" {
     avm_git_commit           = "0978238465c76c23be1b5998c1451519b4d135c9"
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-01 10:37:24"
-    avm_git_org              = "luke-taylor"
-    avm_git_repo             = "terraform-azurerm-alz-vgw"
+    avm_git_org              = "Azure"
+    avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "2b0f5b0c-0ccc-4c57-a6dc-54b0356f131c"
+    avm_yor_trace            = "024debc0-4ee0-441c-9904-b10ae232d617"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -47,10 +47,10 @@ resource "azurerm_public_ip" "vgw" {
     avm_git_commit           = "0978238465c76c23be1b5998c1451519b4d135c9"
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-01 10:37:24"
-    avm_git_org              = "luke-taylor"
-    avm_git_repo             = "terraform-azurerm-alz-vgw"
+    avm_git_org              = "Azure"
+    avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "a0cfeed5-7e82-4185-adf3-c88defe9b300"
+    avm_yor_trace            = "5d59ee12-248b-4b7c-b897-e6f90d86da95"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -69,10 +69,10 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     avm_git_commit           = "f4d795487dd08e721ce03e7dc1f7806fdd148c93"
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-15 19:38:46"
-    avm_git_org              = "luke-taylor"
-    avm_git_repo             = "terraform-azurerm-alz-vgw"
+    avm_git_org              = "Azure"
+    avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "4e165fb5-c3d1-462b-8acf-f074584cebff"
+    avm_yor_trace            = "42f2611d-8ff1-431e-8bcf-00ed4cabac31"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   vpn_type = var.vpn_type
 
@@ -154,10 +154,10 @@ resource "azurerm_local_network_gateway" "vgw" {
     avm_git_commit           = "bc67a9e4a4c0beb833f1249369f9f1aa864de6e3"
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-17 15:24:49"
-    avm_git_org              = "luke-taylor"
-    avm_git_repo             = "terraform-azurerm-alz-vgw"
+    avm_git_org              = "Azure"
+    avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "6e99c00c-0c46-42a5-a0c8-46207b5d8bc7"
+    avm_yor_trace            = "40e2af97-a49d-4b16-a4b1-b5d896fd85ad"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 
   dynamic "bgp_settings" {
@@ -197,10 +197,10 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
     avm_git_commit           = "0978238465c76c23be1b5998c1451519b4d135c9"
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-01 10:37:24"
-    avm_git_org              = "luke-taylor"
-    avm_git_repo             = "terraform-azurerm-alz-vgw"
+    avm_git_org              = "Azure"
+    avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "9326d4ba-2efa-4528-b577-e60cb38131fb"
+    avm_yor_trace            = "6710a20c-1a9f-4ebf-8d60-376703f97cd6"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
