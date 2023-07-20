@@ -4,6 +4,7 @@
 
 **Merged pull requests:**
 
+- Update Readme [\#3](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/3) ([luke-taylor](https://github.com/luke-taylor))
 - Code Clean-up and README Update [\#2](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/2) ([luke-taylor](https://github.com/luke-taylor))
 - Update Test  [\#1](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/1) ([luke-taylor](https://github.com/luke-taylor))
 
