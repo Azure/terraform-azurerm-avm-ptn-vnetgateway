@@ -19,7 +19,7 @@ resource "azurerm_route_table" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "238af4b1-dbe6-4a89-8741-ee0161886c8f"
+    avm_yor_trace            = "07de3af7-fb97-4bbf-8660-698da0ec5e67"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -50,7 +50,7 @@ resource "azurerm_public_ip" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "26a2839c-edf1-495a-b375-f20acf8637a9"
+    avm_yor_trace            = "bbc17702-e12a-4547-bf4f-b593667a22b5"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -72,7 +72,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "3554be1c-36fa-40a6-b7f6-6d719048ce13"
+    avm_yor_trace            = "afcdb1b6-22b6-4675-9623-9933967596f0"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   vpn_type = var.vpn_type
 
@@ -157,7 +157,7 @@ resource "azurerm_local_network_gateway" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "a68a1867-dee5-48b0-8082-57efbb8a80e4"
+    avm_yor_trace            = "0f390567-67a2-4a7e-b539-fbedd0ef815a"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 
   dynamic "bgp_settings" {
@@ -200,7 +200,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "b1f9bdc8-7f5f-4c8f-b188-c80c078076cd"
+    avm_yor_trace            = "17138cd3-27ec-4061-99f2-13e9cc127b74"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
