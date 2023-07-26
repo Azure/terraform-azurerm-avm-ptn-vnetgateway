@@ -5,6 +5,7 @@
 **Merged pull requests:**
 
 - Build\(deps\): Bump github.com/Azure/terraform-module-test-helper from 0.14.0 to 0.15.0 in /test [\#5](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/5) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Build\(deps\): Bump github.com/gruntwork-io/terratest from 0.43.8 to 0.43.9 in /test [\#4](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/4) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [v0.1.0](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/v0.1.0) (2023-07-20)
 
