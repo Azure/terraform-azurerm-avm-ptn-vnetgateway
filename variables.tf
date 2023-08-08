@@ -59,7 +59,7 @@ variable "edge_zone" {
 variable "express_route_circuits" {
   type = map(object({
     express_route_circuit_id = string
-    connection_config = optional(object({
+    connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
       name                         = optional(string, null)
@@ -67,7 +67,7 @@ variable "express_route_circuits" {
       shared_key                   = optional(string, null)
       tags                         = optional(map(string), {})
     }), null)
-    peering_config = optional(object({
+    peering = optional(object({
       peering_type                  = string
       vlan_id                       = number
       ipv4_enabled                  = optional(bool, true)
@@ -90,7 +90,7 @@ Map of Virtual Network Gateway Connections and Peering Configurations to create 
 
 - `express_route_circuit_id` - (Required) The ID of the ExpressRoute circuit.
 
-- `connection_config` - (Optional) a `connection_config` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
+- `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
   - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding. 
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
@@ -98,7 +98,7 @@ Map of Virtual Network Gateway Connections and Peering Configurations to create 
   - `shared_key` - (Optional) The shared key for the Virtual Network Gateway Connection.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
 
-- `peering_config` - (Optional) a `peering_config` block as defined below. Used to configure the ExpressRoute Circuit Peering.
+- `peering` - (Optional) a `peering` block as defined below. Used to configure the ExpressRoute Circuit Peering.
   - `peering_type` - (Required) The type of the peering. Possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering.
   - `vlan_id` - (Required) The VLAN ID for the peering.
   - `ipv4_enabled` - (Optional) Whether IPv4 is enabled on the peering. Defaults to true.
@@ -116,7 +116,7 @@ DESCRIPTION
   nullable    = false
 
   validation {
-    condition     = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering_config.peering_type)])
+    condition     = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering.peering_type)])
     error_message = "peering_type possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
   }
 }
@@ -161,7 +161,7 @@ variable "local_network_gateways" {
       bgp_peering_address = string
       peer_weight         = optional(number, null)
     }), null)
-    connection_config = optional(object({
+    connection = optional(object({
       name                               = optional(string, null)
       type                               = string
       connection_mode                    = optional(string, null)
@@ -212,7 +212,7 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   - `bgp_peering_address` - (Required) The BGP peering address of the Local Network Gateway.
   - `peer_weight` - (Optional) The weight added to routes learned from this BGP speaker.
 
-- `connection_config` - (Optional) a `connection_config` block as defined below. Used to configure the Virtual Network Gateway Connection for the Local Network Gateway.
+- `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection for the Local Network Gateway.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
   - `type` - (Required) The type of Virtual Network Gateway Connection. Possible values are IPsec or Vnet2Vnet.
   - `connection_mode` - (Optional) The connection mode.

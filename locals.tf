@@ -47,29 +47,29 @@ locals {
 locals {
   express_route_circuit_peerings = {
     for k, v in var.express_route_circuits : k => merge(
-      v.peering_config,
+      v.peering,
       {
         express_route_circuit_name = basename(v.express_route_circuit_id)
       }
     )
-    if v.peering_config != null
+    if v.peering != null
   }
 }
 
 locals {
   erc_virtual_network_gateway_connections = {
     for k, v in var.express_route_circuits : "erc-${k}" => merge(
-      v.connection_config,
+      v.connection,
       {
         type                     = "ExpressRouteCircuit"
         express_route_circuit_id = v.express_route_circuit_id
       }
     )
-    if v.connection_config != null
+    if v.connection != null
   }
   lgw_virtual_network_gateway_connections = {
-    for k, v in var.local_network_gateways : "lgw-${k}" => v.connection_config
-    if v.connection_config != null
+    for k, v in var.local_network_gateways : "lgw-${k}" => v.connection
+    if v.connection != null
   }
   virtual_network_gateway_connections = merge(local.lgw_virtual_network_gateway_connections, local.erc_virtual_network_gateway_connections)
 }
