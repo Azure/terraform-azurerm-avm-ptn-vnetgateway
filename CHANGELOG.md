@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/HEAD)
+## [v0.1.1](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/v0.1.1) (2023-08-08)
 
 **Merged pull requests:**
 
