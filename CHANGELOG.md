@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/HEAD)
+
+**Merged pull requests:**
+
+- Add Subnet Output [\#9](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/9) ([luke-taylor](https://github.com/luke-taylor))
+
 ## [v0.1.1](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/v0.1.1) (2023-08-08)
 
 **Merged pull requests:**
