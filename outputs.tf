@@ -28,6 +28,14 @@ output "route_table" {
   }
 }
 
+output "subnet" {
+  description = "A curated output of the GatewaySubnet created by this module."
+  value = {
+    id   = azurerm_subnet.vgw.id
+    name = azurerm_subnet.vgw.name
+  }
+}
+
 output "virtual_network_gateway" {
   description = "A curated output of the Virtual Network Gateway created by this module."
   value = {

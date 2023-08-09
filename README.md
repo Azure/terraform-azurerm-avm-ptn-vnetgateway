@@ -586,6 +586,10 @@ Description: A curated output of the Public IP Addresses created by this module.
 
 Description: A curated output of the Route Table created by this module.
 
+### <a name="output_subnet"></a> [subnet](#output\_subnet)
+
+Description: A curated output of the GatewaySubnet created by this module.
+
 ### <a name="output_virtual_network_gateway"></a> [virtual\_network\_gateway](#output\_virtual\_network\_gateway)
 
 Description: A curated output of the Virtual Network Gateway created by this module.
