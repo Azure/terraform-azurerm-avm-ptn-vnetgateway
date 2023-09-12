@@ -45,11 +45,16 @@ locals {
 }
 
 locals {
+  local_network_gateways = {
+  for k, v in var.local_network_gateways : k => v if v.id == null }
+}
+
+locals {
   express_route_circuit_peerings = {
     for k, v in var.express_route_circuits : k => merge(
       v.peering,
       {
-        express_route_circuit_name = basename(v.express_route_circuit_id)
+        express_route_circuit_name = basename(v.id)
       }
     )
     if v.peering != null
@@ -62,13 +67,18 @@ locals {
       v.connection,
       {
         type                     = "ExpressRouteCircuit"
-        express_route_circuit_id = v.express_route_circuit_id
+        express_route_circuit_id = v.id
       }
     )
     if v.connection != null
   }
   lgw_virtual_network_gateway_connections = {
-    for k, v in var.local_network_gateways : "lgw-${k}" => v.connection
+    for k, v in var.local_network_gateways : "lgw-${k}" => merge(
+      v.connection,
+      {
+        local_network_gateway_id = v.id
+      }
+    )
     if v.connection != null
   }
   virtual_network_gateway_connections = merge(local.lgw_virtual_network_gateway_connections, local.erc_virtual_network_gateway_connections)

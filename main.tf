@@ -1,4 +1,6 @@
 resource "azurerm_subnet" "vgw" {
+  count = var.subnet_id != "" ? 0 : 1
+
   address_prefixes     = [var.subnet_address_prefix]
   name                 = "GatewaySubnet"
   resource_group_name  = var.virtual_network_resource_group_name
@@ -27,7 +29,7 @@ resource "azurerm_subnet_route_table_association" "vgw" {
   count = var.route_table_creation_enabled ? 1 : 0
 
   route_table_id = azurerm_route_table.vgw[0].id
-  subnet_id      = azurerm_subnet.vgw.id
+  subnet_id      = try(azurerm_subnet.vgw[0].id, var.subnet_id)
 
   depends_on = [
     azurerm_subnet.vgw,
@@ -81,7 +83,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
 
     content {
       public_ip_address_id          = azurerm_public_ip.vgw[ip_configuration.key].id
-      subnet_id                     = azurerm_subnet.vgw.id
+      subnet_id                     = try(azurerm_subnet.vgw[0].id, var.subnet_id)
       name                          = ip_configuration.value.name
       private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
     }
@@ -142,7 +144,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
 }
 
 resource "azurerm_local_network_gateway" "vgw" {
-  for_each = var.local_network_gateways
+  for_each = local.local_network_gateways
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
@@ -189,7 +191,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   express_route_gateway_bypass    = try(each.value.express_route_gateway_bypass, null)
   ingress_nat_rule_ids            = try(each.value.ingress_nat_rule_ids, null)
   local_azure_ip_address_enabled  = try(each.value.local_azure_ip_address_enabled, null)
-  local_network_gateway_id        = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, null)
+  local_network_gateway_id        = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
   peer_virtual_network_gateway_id = try(each.value.peer_virtual_network_gateway_id, null)
   routing_weight                  = each.value.routing_weight
   shared_key                      = try(each.value.shared_key, null)

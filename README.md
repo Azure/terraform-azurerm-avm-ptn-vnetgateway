@@ -164,12 +164,6 @@ Description: The SKU (size) of the Virtual Network Gateway.
 
 Type: `string`
 
-### <a name="input_subnet_address_prefix"></a> [subnet\_address\_prefix](#input\_subnet\_address\_prefix)
-
-Description: The address prefix for the gateway subnet.
-
-Type: `string`
-
 ### <a name="input_type"></a> [type](#input\_type)
 
 Description: The type of the Virtual Network Gateway, ExpressRoute or VPN.
@@ -212,7 +206,7 @@ Default: `null`
 
 Description: Map of Virtual Network Gateway Connections and Peering Configurations to create for existing ExpressRoute circuits.
 
-- `express_route_circuit_id` - (Required) The ID of the ExpressRoute circuit.
+- `id` - (Required) The ID of the ExpressRoute circuit.
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
@@ -241,7 +235,7 @@ Type:
 
 ```hcl
 map(object({
-    express_route_circuit_id = string
+    id = string
     connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
@@ -306,7 +300,8 @@ Default: `{}`
 
 Description: Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
-- `name` - (Optional) The name of the Local Network Gateway.
+- `id` - (Optional) The ID of the pre-exisitng Local Network Gateway.
+- `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
 - `gateway_address` - (Optional) The gateway IP address for the Local Network Gateway.
@@ -351,6 +346,7 @@ Type:
 
 ```hcl
 map(object({
+    id              = optional(string, null)
     name            = optional(string, null)
     address_space   = optional(list(string), null)
     gateway_fqdn    = optional(string, null)
@@ -433,6 +429,22 @@ Description: Tags for the Route Table.
 Type: `map(string)`
 
 Default: `{}`
+
+### <a name="input_subnet_address_prefix"></a> [subnet\_address\_prefix](#input\_subnet\_address\_prefix)
+
+Description: The address prefix for the gateway subnet. Either subnet\_id or subnet\_address\_prefix must be specified.
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
+
+Description: The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet\_id or subnet\_address\_prefix must be specified.
+
+Type: `string`
+
+Default: `""`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

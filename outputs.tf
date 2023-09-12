@@ -31,8 +31,8 @@ output "route_table" {
 output "subnet" {
   description = "A curated output of the GatewaySubnet created by this module."
   value = {
-    id   = azurerm_subnet.vgw.id
-    name = azurerm_subnet.vgw.name
+    id   = try(azurerm_subnet.vgw[0].id)
+    name = try(azurerm_subnet.vgw[0].name)
   }
 }
 

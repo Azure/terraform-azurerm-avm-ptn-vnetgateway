@@ -20,7 +20,16 @@ variable "sku" {
 
 variable "subnet_address_prefix" {
   type        = string
-  description = "The address prefix for the gateway subnet."
+  description = "The address prefix for the gateway subnet. Either subnet_id or subnet_address_prefix must be specified."
+  default     = ""
+  nullable    = false
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet_id or subnet_address_prefix must be specified."
+  default     = ""
+  nullable    = false
 }
 
 variable "type" {
@@ -58,7 +67,7 @@ variable "edge_zone" {
 
 variable "express_route_circuits" {
   type = map(object({
-    express_route_circuit_id = string
+    id = string
     connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
@@ -88,7 +97,7 @@ variable "express_route_circuits" {
   description = <<DESCRIPTION
 Map of Virtual Network Gateway Connections and Peering Configurations to create for existing ExpressRoute circuits.
 
-- `express_route_circuit_id` - (Required) The ID of the ExpressRoute circuit.
+- `id` - (Required) The ID of the ExpressRoute circuit.
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
@@ -151,6 +160,7 @@ DESCRIPTION
 
 variable "local_network_gateways" {
   type = map(object({
+    id              = optional(string, null)
     name            = optional(string, null)
     address_space   = optional(list(string), null)
     gateway_fqdn    = optional(string, null)
@@ -202,7 +212,8 @@ variable "local_network_gateways" {
   description = <<DESCRIPTION
 Map of Local Network Gateways and Virtual Network Gateway Connections to create for the Virtual Network Gateway.
 
-- `name` - (Optional) The name of the Local Network Gateway.
+- `id` - (Optional) The ID of the pre-exisitng Local Network Gateway.
+- `name` - (Optional) The name of the Local Network Gateway to create.
 - `address_space` - (Optional) The list of address spaces for the Local Network Gateway.
 - `gateway_fqdn` - (Optional) The gateway FQDN for the Local Network Gateway.
 - `gateway_address` - (Optional) The gateway IP address for the Local Network Gateway.
@@ -246,7 +257,7 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   nullable    = false
 
   validation {
-    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : v.gateway_fqdn == null && v.gateway_address == null ? false : true])
+    condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true) if v.id == null])
     error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
   }
 }
