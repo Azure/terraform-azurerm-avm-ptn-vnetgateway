@@ -4,6 +4,7 @@
 
 **Merged pull requests:**
 
+- Add Bring Your Own Subnet and Local Network Gateway Option. [\#12](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/12) ([luke-taylor](https://github.com/luke-taylor))
 - Build\(deps\): Bump github.com/gruntwork-io/terratest from 0.43.12 to 0.43.13 in /test [\#11](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/11) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Build\(deps\): Bump github.com/gruntwork-io/terratest from 0.43.9 to 0.43.12 in /test [\#10](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/10) ([dependabot[bot]](https://github.com/apps/dependabot))
 

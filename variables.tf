@@ -18,20 +18,6 @@ variable "sku" {
   }
 }
 
-variable "subnet_address_prefix" {
-  type        = string
-  description = "The address prefix for the gateway subnet. Either subnet_id or subnet_address_prefix must be specified."
-  default     = ""
-  nullable    = false
-}
-
-variable "subnet_id" {
-  type        = string
-  description = "The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet_id or subnet_address_prefix must be specified."
-  default     = ""
-  nullable    = false
-}
-
 variable "type" {
   type        = string
   description = "The type of the Virtual Network Gateway, ExpressRoute or VPN."
@@ -286,6 +272,20 @@ variable "route_table_tags" {
   type        = map(string)
   default     = {}
   description = "Tags for the Route Table."
+  nullable    = false
+}
+
+variable "subnet_address_prefix" {
+  type        = string
+  default     = ""
+  description = "The address prefix for the gateway subnet. Either subnet_id or subnet_address_prefix must be specified."
+  nullable    = false
+}
+
+variable "subnet_id" {
+  type        = string
+  default     = ""
+  description = "The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet_id or subnet_address_prefix must be specified."
   nullable    = false
 }
 

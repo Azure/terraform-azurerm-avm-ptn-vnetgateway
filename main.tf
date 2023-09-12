@@ -21,7 +21,7 @@ resource "azurerm_route_table" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "97f49f51-7252-441d-b25b-a741d2250e47"
+    avm_yor_trace            = "f532ff1d-b73f-428e-8c9d-e5c6394da626"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -52,7 +52,7 @@ resource "azurerm_public_ip" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "e2b7b3d6-3017-41ea-8d21-4e71553f3252"
+    avm_yor_trace            = "6d480110-7936-4f87-bcc4-661f82eeea36"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -68,13 +68,13 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   generation                 = var.vpn_generation
   private_ip_address_enabled = var.vpn_private_ip_address_enabled
   tags = merge(var.default_tags, var.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
+    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
     avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-18 15:49:46"
+    avm_git_last_modified_at = "2023-09-12 14:34:22"
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "6066f0ef-d6fa-4124-bcc5-2808bb9395b7"
+    avm_yor_trace            = "a414bd98-893c-4092-bb4b-1ae9d27826ac"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   vpn_type = var.vpn_type
 
@@ -153,13 +153,13 @@ resource "azurerm_local_network_gateway" "vgw" {
   gateway_address     = each.value.gateway_address
   gateway_fqdn        = each.value.gateway_fqdn
   tags = merge(var.default_tags, each.value.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
+    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
     avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-18 15:49:46"
+    avm_git_last_modified_at = "2023-09-12 14:34:22"
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "c273044a-b07c-471c-ae0a-b4907b1bc0c4"
+    avm_yor_trace            = "c3d1161c-3e8f-4912-9f8f-cf8b27d1b38a"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 
   dynamic "bgp_settings" {
@@ -196,13 +196,13 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   routing_weight                  = each.value.routing_weight
   shared_key                      = try(each.value.shared_key, null)
   tags = merge(var.default_tags, each.value.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
+    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
     avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-18 15:49:46"
+    avm_git_last_modified_at = "2023-09-12 14:34:22"
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-vnet-gateway"
     avm_yor_name             = "vgw"
-    avm_yor_trace            = "0bfd04e3-d022-4067-badc-c037e432e459"
+    avm_yor_trace            = "734ac7d4-d717-47c1-9d94-c0f7ebcda118"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
