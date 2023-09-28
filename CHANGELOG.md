@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/HEAD)
+
+**Merged pull requests:**
+
+- Build\(deps\): Bump github.com/gruntwork-io/terratest from 0.43.13 to 0.44.0 in /test [\#13](https://github.com/Azure/terraform-azurerm-vnet-gateway/pull/13) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v0.1.4](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/v0.1.4) (2023-09-17)
 
 ## [v0.1.3](https://github.com/Azure/terraform-azurerm-vnet-gateway/tree/v0.1.3) (2023-09-12)
