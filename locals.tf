@@ -66,7 +66,7 @@ locals {
     for k, v in var.express_route_circuits : "erc-${k}" => merge(
       v.connection,
       {
-        type                     = "ExpressRouteCircuit"
+        type                     = "ExpressRoute"
         express_route_circuit_id = v.id
       }
     )
