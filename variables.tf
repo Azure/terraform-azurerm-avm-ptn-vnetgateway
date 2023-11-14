@@ -67,7 +67,7 @@ variable "express_route_circuits" {
       vlan_id                       = number
       ipv4_enabled                  = optional(bool, true)
       peer_asn                      = optional(number, null)
-      primary_peer_address_prefix   = optional(number, null)
+      primary_peer_address_prefix   = optional(string, null)
       secondary_peer_address_prefix = optional(string, null)
       shared_key                    = optional(string, null)
       route_filter_id               = optional(string, null)
@@ -87,7 +87,7 @@ Map of Virtual Network Gateway Connections and Peering Configurations to create 
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
-  - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding. 
+  - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
   - `routing_weight` - (Optional) The weight added to routes learned from this Virtual Network Gateway Connection. Defaults to 10.
   - `shared_key` - (Optional) The shared key for the Virtual Network Gateway Connection.
