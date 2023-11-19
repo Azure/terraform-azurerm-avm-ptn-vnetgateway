@@ -21,11 +21,7 @@ resource "azurerm_route_table" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
-<<<<<<< HEAD
-    avm_yor_trace            = "c7f6890d-5f69-4192-9159-5764e698f630"
-=======
     avm_yor_trace            = "1e66770f-f604-4231-95ee-e72009b89623"
->>>>>>> a39f5eb (Auto update)
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -56,11 +52,7 @@ resource "azurerm_public_ip" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
-<<<<<<< HEAD
-    avm_yor_trace            = "98db673f-0350-4938-be46-22a8780e375a"
-=======
     avm_yor_trace            = "726a9193-ce2e-4f51-96a3-2db41b4247c2"
->>>>>>> a39f5eb (Auto update)
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 }
 
@@ -82,11 +74,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
-<<<<<<< HEAD
-    avm_yor_trace            = "592aa2b5-9b88-4fe5-a538-4d3c8d5f4ba8"
-=======
     avm_yor_trace            = "23371fe3-c7ff-4cc4-9088-e4ea564fa98b"
->>>>>>> a39f5eb (Auto update)
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   vpn_type = var.vpn_type
 
@@ -171,11 +159,7 @@ resource "azurerm_local_network_gateway" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
-<<<<<<< HEAD
-    avm_yor_trace            = "d57dea2f-2ec1-4d4c-9ba3-ec53eef4d0f2"
-=======
     avm_yor_trace            = "aea72390-43a9-4690-937c-a28de8721fc8"
->>>>>>> a39f5eb (Auto update)
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
 
   dynamic "bgp_settings" {
@@ -218,11 +202,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
     avm_git_org              = "Azure"
     avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
-<<<<<<< HEAD
-    avm_yor_trace            = "ac22224c-dbd9-4293-9f7d-d547f00c4def"
-=======
     avm_yor_trace            = "2865354f-9719-479a-bb7f-0f7b541d16f1"
->>>>>>> a39f5eb (Auto update)
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
