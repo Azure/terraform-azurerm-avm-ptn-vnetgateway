@@ -1,4 +1,5 @@
-## Contributing 
+## Contributing
+
 1. Fork the repository.
 2. Write Terraform code in a new branch.
 3. Run `docker run --rm -v ${pwd}:/src -w /src mcr.microsoft.com/azterraform:latest make pre-commit` to format the code.
@@ -6,7 +7,7 @@
 5. Create a pull request for the main branch.
     * CI pr-check will be executed automatically.
     * Once pr-check was passed, with manually approval, the e2e test and version upgrade test would be executed.
-6. Merge pull request after approval. 
+6. Merge pull request after approval.
 
 ## Trademarks
 

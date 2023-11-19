@@ -1,24 +1,27 @@
-# terraform-azurerm-vnet-gateway
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Azure/terraform-azurerm-vnet-gateway.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-vnet-gateway "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/Azure/terraform-azurerm-vnet-gateway.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-vnet-gateway "Percentage of issues still open")
+# terraform-azurerm-avm-ptn-vnetgateway
 
-This module is designed to deploy an Azure Virtual Network Gateway and several auxillary resources associated to it. 
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Azure/terraform-azurerm-avm-ptn-vnetgateway.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-avm-ptn-vnetgateway "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/Azure/terraform-azurerm-avm-ptn-vnetgateway.svg)](http://isitmaintained.com/project/Azure/terraform-azurerm-avm-ptn-vnetgateway "Percentage of issues still open")
 
-## Features 
-- Virtual Network Gateway: 
-    - VPN Gateway or ExpressRoute Gateway. 
-    - Active-Active or Single.
-    - Deployment of `GatewaySubnet`.
-- Route Table 
-    - Optional deployment of Route Table on the Gateway Subnet.
+This module is designed to deploy an Azure Virtual Network Gateway and several auxillary resources associated to it.
+
+## Features
+
+- Virtual Network Gateway:
+  - VPN Gateway or ExpressRoute Gateway.
+  - Active-Active or Single.
+  - Deployment of `GatewaySubnet`.
+- Route Table
+  - Optional deployment of Route Table on the Gateway Subnet.
 - Local Network Gateway:
-    - Optional deployment of `n` Local Network Gateways.
-    - Optional deployment of `n` Virtual Network Gateway Connections for Local Network Gateways. 
+  - Optional deployment of `n` Local Network Gateways.
+  - Optional deployment of `n` Virtual Network Gateway Connections for Local Network Gateways.
 - ExpressRoute Circuit:
-    - Configure peering on `n` pre-provisioned ExpressRoute Circuits.
-    - Optional deployment of `n` Virtual Network Gateway Connections for ExpressRoute Circuits.
+  - Configure peering on `n` pre-provisioned ExpressRoute Circuits.
+  - Optional deployment of `n` Virtual Network Gateway Connections for ExpressRoute Circuits.
 
-## Example 
+## Example
+
 ```hcl
 resource "azurerm_resource_group" "rg" {
   location = "uksouth"
@@ -33,7 +36,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 module "vgw" {
-  source  = "Azure/vnet-gateway/azure"
+  source  = "Azure/avm-ptn-vnetgateway/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location                            = "uksouth"
@@ -63,7 +66,7 @@ resource "azurerm_route_table" "vgw" {
     avm_git_file             = "main.tf"
     avm_git_last_modified_at = "2023-07-01 10:37:24"
     avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-vnet-gateway"
+    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
     avm_yor_name             = "vgw"
     avm_yor_trace            = "89805148-c9e6-4736-96bc-0f4095dfb135"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
@@ -74,7 +77,7 @@ To enable tracing tags, set the `tracing_tags_enabled` variable to true:
 
 ```hcl
 module "vgw" {
-  source  = "Azure/vnet-gateway/azure"
+  source  = "Azure/avm-ptn-vnetgateway/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location                            = "uksouth"
@@ -95,7 +98,7 @@ To customize the prefix for your tracing tags, set the `tracing_tags_prefix` var
 
 ```hcl
 module "vgw" {
-  source  = "Azure/vnet-gateway/azure"
+  source  = "Azure/avm-ptn-vnetgateway/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
   location                            = "uksouth"
@@ -119,7 +122,7 @@ The actual applied tags would be:
   custom_prefix_git_file             = "main.tf"
   custom_prefix_git_last_modified_at = "2023-07-01 10:37:24"
   custom_prefix_git_org              = "Azure"
-  custom_prefix_git_repo             = "terraform-azurerm-vnet-gateway"
+  custom_prefix_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
   custom_prefix_yor_name             = "vgw"
   custom_prefix_yor_trace            = "89805148-c9e6-4736-96bc-0f4095dfb135"
 }

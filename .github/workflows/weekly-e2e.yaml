@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   full-e2e-check:
-    runs-on: [self-hosted, 1ES.Pool=terraform-azurerm-vnet-gateway]
+    runs-on: [self-hosted, 1ES.Pool=terraform-azurerm-avm-ptn-vnetgateway]
     environment:
       name: crontests
     steps:
