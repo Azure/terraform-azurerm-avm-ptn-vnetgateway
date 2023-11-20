@@ -235,7 +235,8 @@ Type:
 
 ```hcl
 map(object({
-    id = string
+    id                  = string
+    resource_group_name = optional(string, null)
     connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
@@ -249,7 +250,7 @@ map(object({
       vlan_id                       = number
       ipv4_enabled                  = optional(bool, true)
       peer_asn                      = optional(number, null)
-      primary_peer_address_prefix   = optional(number, null)
+      primary_peer_address_prefix   = optional(string, null)
       secondary_peer_address_prefix = optional(string, null)
       shared_key                    = optional(string, null)
       route_filter_id               = optional(string, null)

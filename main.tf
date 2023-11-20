@@ -248,13 +248,14 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
 
   express_route_circuit_name    = each.value.express_route_circuit_name
   peering_type                  = each.value.peering_type
-  resource_group_name           = var.virtual_network_resource_group_name
+  resource_group_name           = coalesce(each.value.resource_group_name, var.virtual_network_resource_group_name)
   vlan_id                       = each.value.vlan_id
   ipv4_enabled                  = each.value.ipv4_enabled
   primary_peer_address_prefix   = each.value.primary_peer_address_prefix
   route_filter_id               = each.value.route_filter_id
   secondary_peer_address_prefix = each.value.secondary_peer_address_prefix
   shared_key                    = each.value.shared_key
+  peer_asn                      = each.value.peer_asn
 
   dynamic "microsoft_peering_config" {
     for_each = each.value.microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]

@@ -53,7 +53,8 @@ variable "edge_zone" {
 
 variable "express_route_circuits" {
   type = map(object({
-    id = string
+    id                  = string
+    resource_group_name = optional(string, null)
     connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
