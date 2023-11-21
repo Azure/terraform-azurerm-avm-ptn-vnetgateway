@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   acc-tests:
-    runs-on: [self-hosted, 1ES.Pool=terraform-azurerm-avm-ptn-vnetgateway]
+    runs-on: [self-hosted, 1ES.Pool=terraform-azurerm-vnet-gateway]
     environment:
       name: acctests
     steps:
