@@ -1,6 +1,6 @@
 # Changelog
 
-## [v1.0.0](https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway/tree/v1.0.0) (2023-11-22)
+## [v0.1.0](https://github.com/Azure/terraform-azurerm-avm-ptn-vnetgateway/tree/v0.1.0) (2023-11-22)
 
 **Merged pull requests:**
 
