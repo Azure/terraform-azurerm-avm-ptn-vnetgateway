@@ -129,9 +129,7 @@ The actual applied tags would be:
 }
 ```
 
-## Documentation
 <!-- markdownlint-disable MD033 -->
-
 ## Requirements
 
 The following requirements are needed by this module:
@@ -142,9 +140,28 @@ The following requirements are needed by this module:
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0)
 
-## Modules
+## Providers
 
-No modules.
+The following providers are used by this module:
+
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.1, < 4.0)
+
+- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0)
+
+## Resources
+
+The following resources are used by this module:
+
+- [azurerm_express_route_circuit_peering.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/express_route_circuit_peering) (resource)
+- [azurerm_local_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/local_network_gateway) (resource)
+- [azurerm_public_ip.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
+- [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
+- [azurerm_route_table.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) (resource)
+- [azurerm_subnet.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
+- [azurerm_subnet_route_table_association.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association) (resource)
+- [azurerm_virtual_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway) (resource)
+- [azurerm_virtual_network_gateway_connection.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway_connection) (resource)
+- [random_id.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -585,21 +602,6 @@ Type: `string`
 
 Default: `"RouteBased"`
 
-## Resources
-
-The following resources are used by this module:
-
-- [azurerm_express_route_circuit_peering.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/express_route_circuit_peering) (resource)
-- [azurerm_local_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/local_network_gateway) (resource)
-- [azurerm_public_ip.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
-- [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
-- [azurerm_route_table.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) (resource)
-- [azurerm_subnet.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
-- [azurerm_subnet_route_table_association.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association) (resource)
-- [azurerm_virtual_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway) (resource)
-- [azurerm_virtual_network_gateway_connection.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway_connection) (resource)
-- [random_id.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
-
 ## Outputs
 
 The following outputs are exported:
@@ -628,22 +630,12 @@ Description: A curated output of the Virtual Network Gateway created by this mod
 
 Description: A curated output of the Virtual Network Gateway Connections created by this module.
 
-<!-- markdownlint-enable -->
-## Contributing
+## Modules
 
-1. Fork the repository.
-2. Write Terraform code in a new branch.
-3. Run `docker run --rm -v ${pwd}:/src -w /src mcr.microsoft.com/azterraform:latest make pre-commit` to format the code.
-4. Run `docker run --rm -v $(pwd):/src -w /src mcr.microsoft.com/azterraform:latest make pr-check` to run the check locally.
-5. Create a pull request for the main branch.
-    * CI pr-check will be executed automatically.
-    * Once pr-check was passed, with manually approval, the e2e test and version upgrade test would be executed.
-6. Merge pull request after approval.
+No modules.
 
-## Trademarks
+<!-- markdownlint-disable-next-line MD041 -->
+## Data Collection
 
-This project may contain trademarks or logos for projects, products, or services.
-Authorized use of Microsoft trademarks or logos is subject to and must follow Microsoft's Trademark & Brand Guidelines.
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
 <!-- END_TF_DOCS -->
