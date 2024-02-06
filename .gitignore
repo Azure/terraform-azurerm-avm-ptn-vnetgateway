@@ -86,3 +86,6 @@ terraform.rc
 avm.tflint.merged.hcl
 avm.tflint_example.merged.hcl
 *.md.tmp
+
+# ignore tftest whilst developing 
+**.tftest.*
