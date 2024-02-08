@@ -1,0 +1,34 @@
+name: Terraform Unit Tests
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      TF_IN_AUTOMATION: 1
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.7.3
+    - name: terraform init
+      shell: bash
+      run: |
+        set -e
+        az login --identity --username $MSI_ID > /dev/null
+        export ARM_SUBSCRIPTION_ID=$(az login --identity --username $MSI_ID | jq -r '.[0] | .id')
+        export ARM_TENANT_ID=$(az login --identity --username $MSI_ID | jq -r '.[0] | .tenantId')
+        export ARM_CLIENT_ID=$(az identity list | jq -r --arg MSI_ID "$MSI_ID" '.[] | select(.principalId == $MSI_ID) | .clientId')
+        export ARM_USE_MSI=true
+        terraform init
+    - name: Run terraform test
+      run: terraform test
