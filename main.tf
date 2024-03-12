@@ -1,5 +1,5 @@
 resource "azurerm_subnet" "vgw" {
-  count = var.subnet_id != "" ? 0 : 1
+  count = var.subnet_creation_enabled ? 1 : 0
 
   address_prefixes     = [var.subnet_address_prefix]
   name                 = "GatewaySubnet"
@@ -136,17 +136,18 @@ resource "azurerm_virtual_network_gateway" "vgw" {
       }
     }
   }
+
+  depends_on = [
+    azurerm_subnet.vgw,
+    azurerm_public_ip.vgw
+  ]
+
   lifecycle {
     precondition {
       condition     = var.vpn_active_active_enabled == true ? length(local.gateway_ip_configurations) > 1 : true
       error_message = "An active-active gateway requires at least two IP configurations."
     }
   }
-
-  depends_on = [
-    azurerm_subnet.vgw,
-    azurerm_public_ip.vgw
-  ]
 }
 
 resource "azurerm_local_network_gateway" "vgw" {

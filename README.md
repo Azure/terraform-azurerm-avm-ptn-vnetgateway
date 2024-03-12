@@ -471,6 +471,14 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_subnet_creation_enabled"></a> [subnet\_creation\_enabled](#input\_subnet\_creation\_enabled)
+
+Description: Whether or not to create a subnet for the Virtual Network Gateway.
+
+Type: `bool`
+
+Default: `true`
+
 ### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
 
 Description: The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet\_id or subnet\_address\_prefix must be specified.
