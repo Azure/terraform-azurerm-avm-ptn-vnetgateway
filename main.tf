@@ -136,6 +136,12 @@ resource "azurerm_virtual_network_gateway" "vgw" {
       }
     }
   }
+  lifecycle {
+    precondition {
+      condition     = var.vpn_active_active_enabled == true ? length(local.gateway_ip_configurations) > 1 : true
+      error_message = "An active-active gateway requires at least two IP configurations."
+    }
+  }
 
   depends_on = [
     azurerm_subnet.vgw,
