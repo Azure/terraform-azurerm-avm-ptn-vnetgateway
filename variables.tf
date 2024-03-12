@@ -294,6 +294,13 @@ variable "subnet_address_prefix" {
   nullable    = false
 }
 
+variable "subnet_creation_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether or not to create a subnet for the Virtual Network Gateway."
+  nullable    = false
+}
+
 variable "subnet_id" {
   type        = string
   default     = ""
