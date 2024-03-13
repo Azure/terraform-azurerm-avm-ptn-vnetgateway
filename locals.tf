@@ -19,10 +19,21 @@ locals {
     apipa_addresses               = null
     private_ip_address_allocation = "Dynamic"
     public_ip = {
-      name              = null
-      allocation_method = "Dynamic"
-      sku               = "Basic"
-      tags              = null
+      name                    = null
+      allocation_method       = "Static"
+      sku                     = "Standard"
+      tags                    = null
+      zones                   = [1, 2, 3]
+      edge_zone               = null
+      ddos_protection_mode    = "VirtualNetworkInherited"
+      ddos_protection_plan_id = null
+      domain_name_label       = null
+      idle_timeout_in_minutes = null
+      ip_tags                 = {}
+      ip_version              = "IPv4"
+      public_ip_prefix_id     = null
+      reverse_fqdn            = null
+      sku_tier                = "Regional"
     }
   }
   gateway_ip_configurations = {
@@ -55,7 +66,6 @@ locals {
       v.peering,
       {
         express_route_circuit_name = basename(v.id)
-        resource_group_name        = v.resource_group_name
       }
     )
     if v.peering != null
