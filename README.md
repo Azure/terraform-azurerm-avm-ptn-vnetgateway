@@ -180,18 +180,6 @@ Description: The name of the Virtual Network Gateway.
 
 Type: `string`
 
-### <a name="input_sku"></a> [sku](#input\_sku)
-
-Description: The SKU (size) of the Virtual Network Gateway.
-
-Type: `string`
-
-### <a name="input_type"></a> [type](#input\_type)
-
-Description: The type of the Virtual Network Gateway, ExpressRoute or VPN.
-
-Type: `string`
-
 ### <a name="input_virtual_network_name"></a> [virtual\_network\_name](#input\_virtual\_network\_name)
 
 Description: The name of the Virtual Network.
@@ -251,6 +239,7 @@ Description: Map of Virtual Network Gateway Connections and Peering Configuratio
 - `peering` - (Optional) a `peering` block as defined below. Used to configure the ExpressRoute Circuit Peering.
   - `peering_type` - (Required) The type of the peering. Possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering.
   - `vlan_id` - (Required) The VLAN ID for the peering.
+  - `resource_group_name` - (Optional) The name of the resource group in which to put the ExpressRoute Circuit Peering. Defaults to the resource group of the Virtual Network Gateway.
   - `ipv4_enabled` - (Optional) Whether IPv4 is enabled on the peering. Defaults to true.
   - `peer_asn` - (Optional) The peer ASN.
   - `primary_peer_address_prefix` - (Optional) The primary address prefix.
@@ -267,8 +256,7 @@ Type:
 
 ```hcl
 map(object({
-    id                  = string
-    resource_group_name = optional(string, null)
+    id = string
     connection = optional(object({
       authorization_key            = optional(string, null)
       express_route_gateway_bypass = optional(bool, null)
@@ -280,6 +268,7 @@ map(object({
     peering = optional(object({
       peering_type                  = string
       vlan_id                       = number
+      resource_group_name           = optional(string, null)
       ipv4_enabled                  = optional(bool, true)
       peer_asn                      = optional(number, null)
       primary_peer_address_prefix   = optional(string, null)
@@ -308,8 +297,19 @@ Description: Map of IP Configurations to create for the Virtual Network Gateway.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
   - `name` - (Optional) The name of the Public IP Address.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
-  - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Basic.
+  - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
+  - `zones` - (Optional) The list of availability zones for the Public IP Address.
+  - `edge_zone` - (Optional) The edge zone for the Public IP Address. Only supported for AZ SKUs.
+  - `ddos_protection_mode` - (Optional) The DDoS protection mode of the Public IP Address. Possible values are Disabled, Enabled or VirtualNetworkInherited. Defaults to VirtualNetworkInherited.
+  - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan for the Public IP Address.
+  - `domain_name_label` - (Optional) The domain name label for the Public IP Address.
+  - `idle_timeout_in_minutes` - (Optional) The idle timeout in minutes for the Public IP Address.
+  - `ip_tags` - (Optional) A mapping of IP tags to assign to the resource.
+  - `ip_version` - (Optional) The IP version of the Public IP Address. Possible values are IPv4 or IPv6. Defaults to IPv4.
+  - `public_ip_prefix_id` - (Optional) The ID of the Public IP Prefix for the Public IP Address.
+  - `reverse_fqdn` - (Optional) The reverse FQDN for the Public IP Address.
+  - `sku_tier` - (Optional) The tier of the Public IP Address. Possible values are Regional or Global. Defaults to Regional.
 
 Type:
 
@@ -319,10 +319,21 @@ map(object({
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
-      name              = optional(string, null)
-      allocation_method = optional(string, "Dynamic")
-      sku               = optional(string, "Basic")
-      tags              = optional(map(string), {})
+      name                    = optional(string, null)
+      allocation_method       = optional(string, "Static")
+      sku                     = optional(string, "Standard")
+      tags                    = optional(map(string), {})
+      zones                   = optional(list(number), [1, 2, 3])
+      edge_zone               = optional(number, null)
+      ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+      ddos_protection_plan_id = optional(string, null)
+      domain_name_label       = optional(string, null)
+      idle_timeout_in_minutes = optional(number, null)
+      ip_tags                 = optional(map(string), {})
+      ip_version              = optional(string, "IPv4")
+      public_ip_prefix_id     = optional(string, null)
+      reverse_fqdn            = optional(string, null)
+      sku_tier                = optional(string, "Regional")
     }), {})
   }))
 ```
@@ -463,6 +474,14 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_sku"></a> [sku](#input\_sku)
+
+Description: The SKU (size) of the Virtual Network Gateway.
+
+Type: `string`
+
+Default: `"ErGw1AZ"`
+
 ### <a name="input_subnet_address_prefix"></a> [subnet\_address\_prefix](#input\_subnet\_address\_prefix)
 
 Description: The address prefix for the gateway subnet. Either subnet\_id or subnet\_address\_prefix must be specified.
@@ -510,6 +529,14 @@ Description: Default prefix for generated tracing tags
 Type: `string`
 
 Default: `"avm_"`
+
+### <a name="input_type"></a> [type](#input\_type)
+
+Description: The type of the Virtual Network Gateway, ExpressRoute or Vpn.
+
+Type: `string`
+
+Default: `"ExpressRoute"`
 
 ### <a name="input_vpn_active_active_enabled"></a> [vpn\_active\_active\_enabled](#input\_vpn\_active\_active\_enabled)
 

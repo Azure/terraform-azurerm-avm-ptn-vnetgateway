@@ -40,11 +40,21 @@ resource "azurerm_subnet_route_table_association" "vgw" {
 resource "azurerm_public_ip" "vgw" {
   for_each = local.ip_configurations
 
-  allocation_method   = each.value.public_ip.allocation_method
-  location            = var.location
-  name                = coalesce(each.value.public_ip.name, "pip-${var.name}-${each.key}")
-  resource_group_name = var.virtual_network_resource_group_name
-  sku                 = each.value.public_ip.sku
+  allocation_method       = each.value.public_ip.allocation_method
+  location                = var.location
+  name                    = coalesce(each.value.public_ip.name, "pip-${var.name}-${each.key}")
+  resource_group_name     = var.virtual_network_resource_group_name
+  ddos_protection_mode    = each.value.public_ip.ddos_protection_mode
+  ddos_protection_plan_id = each.value.public_ip.ddos_protection_plan_id
+  domain_name_label       = each.value.public_ip.domain_name_label
+  edge_zone               = each.value.public_ip.edge_zone
+  idle_timeout_in_minutes = each.value.public_ip.idle_timeout_in_minutes
+  ip_tags                 = each.value.public_ip.ip_tags
+  ip_version              = each.value.public_ip.ip_version
+  public_ip_prefix_id     = each.value.public_ip.public_ip_prefix_id
+  reverse_fqdn            = each.value.public_ip.reverse_fqdn
+  sku                     = each.value.public_ip.sku
+  sku_tier                = each.value.public_ip.sku_tier
   tags = merge(var.default_tags, each.value.public_ip.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
     avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
     avm_git_file             = "main.tf"
@@ -54,6 +64,7 @@ resource "azurerm_public_ip" "vgw" {
     avm_yor_name             = "vgw"
     avm_yor_trace            = "e4c64e88-4786-4ada-9736-85eeca30a0bc"
   } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
+  zones = each.value.public_ip.zones
 }
 
 resource "azurerm_virtual_network_gateway" "vgw" {
