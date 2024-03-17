@@ -12,7 +12,8 @@ variables {
     "subscriptions",
     "00000000-0000-0000-0000-000000000000",
     "resourceGroups",
-    "rg-test", "providers",
+    "rg-test",
+    "providers",
     "Microsoft.Network",
     "virtualNetworks",
     "vnet-test"
@@ -36,7 +37,17 @@ run "expressroute" {
     }
     express_route_circuits = {
       erc = {
-        id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-erc-test/providers/Microsoft.Network/expressRouteCircuits/erc-test"
+        id = join("/", [
+          "",
+          "subscriptions",
+          "00000000-0000-0000-0000-000000000000",
+          "resourceGroups",
+          "rg-erc-test",
+          "providers",
+          "Microsoft.Network",
+          "expressRouteCircuits",
+          "erc-test"
+        ])
         connection = {
           express_route_gateway_bypass = true
           authorization_key            = "ABDNDBEHF"
