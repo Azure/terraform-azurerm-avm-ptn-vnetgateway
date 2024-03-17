@@ -26,6 +26,7 @@ module "vgw" {
   name                      = "vgw-uksouth-prod"
   subnet_address_prefix     = "10.0.1.0/24"
   sku                       = "VpnGw1AZ"
+  type                      = "Vpn"
   virtual_network_id        = azurerm_virtual_network.vnet.id
   subnet_creation_enabled   = false
   vpn_active_active_enabled = true
