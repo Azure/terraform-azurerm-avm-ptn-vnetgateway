@@ -40,13 +40,10 @@ module "vgw" {
   source  = "Azure/avm-ptn-vnetgateway/azurerm"
   version = "<version>" # change this to your desired version, https://www.terraform.io/language/expressions/version-constraints
 
-  location                            = "uksouth"
-  name                                = "vgw-uksouth-prod"
-  sku                                 = "VpnGw1"
-  subnet_address_prefix               = "10.0.1.0/24"
-  type                                = "Vpn"
-  virtual_network_name                = azurerm_virtual_network.vnet.name
-  virtual_network_resource_group_name = azurerm_virtual_network.vnet.resource_group_name
+  location              = "uksouth"
+  name                  = "vgw-uksouth-prod"
+  subnet_address_prefix = "10.0.1.0/24"
+  virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 ```
 
