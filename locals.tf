@@ -1,4 +1,8 @@
 locals {
+  virtual_network_name                = basename(var.virtual_network_id)
+  virtual_network_resource_group_name = split("/", var.virtual_network_id)[4]
+}
+locals {
   bgp_settings = (var.vpn_bgp_settings == null && alltrue([for ip_configuration in local.ip_configurations : ip_configuration.apipa_addresses == null]) ? {} :
     {
       BgpSettings = {

@@ -89,3 +89,4 @@ avm.tflint_example.merged.hcl
 
 # ignore tftest whilst developing 
 **.tftest.*
+**/tests/vnet-with-subnet/**

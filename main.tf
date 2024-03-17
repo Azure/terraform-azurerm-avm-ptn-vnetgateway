@@ -3,8 +3,8 @@ resource "azurerm_subnet" "vgw" {
 
   address_prefixes     = [var.subnet_address_prefix]
   name                 = "GatewaySubnet"
-  resource_group_name  = var.virtual_network_resource_group_name
-  virtual_network_name = var.virtual_network_name
+  resource_group_name  = local.virtual_network_resource_group_name
+  virtual_network_name = local.virtual_network_name
 }
 
 resource "azurerm_route_table" "vgw" {
@@ -12,17 +12,9 @@ resource "azurerm_route_table" "vgw" {
 
   location                      = var.location
   name                          = coalesce(var.route_table_name, "rt-${var.name}")
-  resource_group_name           = var.virtual_network_resource_group_name
+  resource_group_name           = local.virtual_network_resource_group_name
   disable_bgp_route_propagation = !var.route_table_bgp_route_propagation_enabled
-  tags = merge(var.default_tags, var.route_table_tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
-    avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-18 15:49:46"
-    avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
-    avm_yor_name             = "vgw"
-    avm_yor_trace            = "d396089a-eac6-4fb1-babb-62e8a02dc879"
-  } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
+  tags                          = merge(var.default_tags, var.route_table_tags)
 }
 
 resource "azurerm_subnet_route_table_association" "vgw" {
@@ -43,7 +35,7 @@ resource "azurerm_public_ip" "vgw" {
   allocation_method       = each.value.public_ip.allocation_method
   location                = var.location
   name                    = coalesce(each.value.public_ip.name, "pip-${var.name}-${each.key}")
-  resource_group_name     = var.virtual_network_resource_group_name
+  resource_group_name     = local.virtual_network_resource_group_name
   ddos_protection_mode    = each.value.public_ip.ddos_protection_mode
   ddos_protection_plan_id = each.value.public_ip.ddos_protection_plan_id
   domain_name_label       = each.value.public_ip.domain_name_label
@@ -55,22 +47,14 @@ resource "azurerm_public_ip" "vgw" {
   reverse_fqdn            = each.value.public_ip.reverse_fqdn
   sku                     = each.value.public_ip.sku
   sku_tier                = each.value.public_ip.sku_tier
-  tags = merge(var.default_tags, each.value.public_ip.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "4cb0eb0d1e18a2cd80c180278ebff45db6cc8388"
-    avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-07-18 15:49:46"
-    avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
-    avm_yor_name             = "vgw"
-    avm_yor_trace            = "e4c64e88-4786-4ada-9736-85eeca30a0bc"
-  } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
-  zones = each.value.public_ip.zones
+  tags                    = merge(var.default_tags, each.value.public_ip.tags)
+  zones                   = each.value.public_ip.zones
 }
 
 resource "azurerm_virtual_network_gateway" "vgw" {
   location                   = var.location
   name                       = var.name
-  resource_group_name        = var.virtual_network_resource_group_name
+  resource_group_name        = local.virtual_network_resource_group_name
   sku                        = var.sku
   type                       = var.type
   active_active              = var.vpn_active_active_enabled
@@ -78,16 +62,8 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   enable_bgp                 = var.vpn_bgp_enabled
   generation                 = var.vpn_generation
   private_ip_address_enabled = var.vpn_private_ip_address_enabled
-  tags = merge(var.default_tags, var.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
-    avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-09-12 14:34:22"
-    avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
-    avm_yor_name             = "vgw"
-    avm_yor_trace            = "b3d8cb79-f769-4066-9bfd-30a12f19f12f"
-  } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
-  vpn_type = var.vpn_type
+  tags                       = merge(var.default_tags, var.tags)
+  vpn_type                   = var.vpn_type
 
   dynamic "ip_configuration" {
     for_each = local.gateway_ip_configurations
@@ -166,19 +142,11 @@ resource "azurerm_local_network_gateway" "vgw" {
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
-  resource_group_name = var.virtual_network_resource_group_name
+  resource_group_name = local.virtual_network_resource_group_name
   address_space       = each.value.address_space
   gateway_address     = each.value.gateway_address
   gateway_fqdn        = each.value.gateway_fqdn
-  tags = merge(var.default_tags, each.value.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
-    avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-09-12 14:34:22"
-    avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
-    avm_yor_name             = "vgw"
-    avm_yor_trace            = "41fee4dd-72a8-41b1-83d9-40fa7a88778c"
-  } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
+  tags                = merge(var.default_tags, each.value.tags)
 
   dynamic "bgp_settings" {
     for_each = each.value.bgp_settings == null ? [] : ["BgpSettings"]
@@ -194,34 +162,26 @@ resource "azurerm_local_network_gateway" "vgw" {
 resource "azurerm_virtual_network_gateway_connection" "vgw" {
   for_each = local.virtual_network_gateway_connections
 
-  location                        = var.location
-  name                            = coalesce(each.value.name, "con-${var.name}-${each.key}")
-  resource_group_name             = var.virtual_network_resource_group_name
-  type                            = each.value.type
-  virtual_network_gateway_id      = azurerm_virtual_network_gateway.vgw.id
-  authorization_key               = try(each.value.authorization_key, null)
-  connection_mode                 = try(each.value.connection_mode, null)
-  connection_protocol             = try(each.value.connection_protocol, null)
-  dpd_timeout_seconds             = try(each.value.dpd_timeout_seconds, null)
-  egress_nat_rule_ids             = try(each.value.egress_nat_rule_ids, null)
-  enable_bgp                      = try(each.value.enable_bgp, null)
-  express_route_circuit_id        = try(each.value.express_route_circuit_id, null)
-  express_route_gateway_bypass    = try(each.value.express_route_gateway_bypass, null)
-  ingress_nat_rule_ids            = try(each.value.ingress_nat_rule_ids, null)
-  local_azure_ip_address_enabled  = try(each.value.local_azure_ip_address_enabled, null)
-  local_network_gateway_id        = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
-  peer_virtual_network_gateway_id = try(each.value.peer_virtual_network_gateway_id, null)
-  routing_weight                  = each.value.routing_weight
-  shared_key                      = try(each.value.shared_key, null)
-  tags = merge(var.default_tags, each.value.tags, (/*<box>*/ (var.tracing_tags_enabled ? { for k, v in /*</box>*/ {
-    avm_git_commit           = "e44a0e8a84e24f791fe8b73d0fc87689eb6f5c45"
-    avm_git_file             = "main.tf"
-    avm_git_last_modified_at = "2023-09-12 14:34:22"
-    avm_git_org              = "Azure"
-    avm_git_repo             = "terraform-azurerm-avm-ptn-vnetgateway"
-    avm_yor_name             = "vgw"
-    avm_yor_trace            = "8ebf3bf5-3200-48e5-8fab-825ec902830a"
-  } /*<box>*/ : replace(k, "avm_", var.tracing_tags_prefix) => v } : {}) /*</box>*/))
+  location                           = var.location
+  name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
+  resource_group_name                = local.virtual_network_resource_group_name
+  type                               = each.value.type
+  virtual_network_gateway_id         = azurerm_virtual_network_gateway.vgw.id
+  authorization_key                  = try(each.value.authorization_key, null)
+  connection_mode                    = try(each.value.connection_mode, null)
+  connection_protocol                = try(each.value.connection_protocol, null)
+  dpd_timeout_seconds                = try(each.value.dpd_timeout_seconds, null)
+  egress_nat_rule_ids                = try(each.value.egress_nat_rule_ids, null)
+  enable_bgp                         = try(each.value.enable_bgp, null)
+  express_route_circuit_id           = try(each.value.express_route_circuit_id, null)
+  express_route_gateway_bypass       = try(each.value.express_route_gateway_bypass, null)
+  ingress_nat_rule_ids               = try(each.value.ingress_nat_rule_ids, null)
+  local_azure_ip_address_enabled     = try(each.value.local_azure_ip_address_enabled, null)
+  local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
+  peer_virtual_network_gateway_id    = try(each.value.peer_virtual_network_gateway_id, null)
+  routing_weight                     = each.value.routing_weight
+  shared_key                         = try(each.value.shared_key, null)
+  tags                               = merge(var.default_tags, each.value.tags)
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
   dynamic "custom_bgp_addresses" {
@@ -266,7 +226,7 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
 
   express_route_circuit_name    = each.value.express_route_circuit_name
   peering_type                  = each.value.peering_type
-  resource_group_name           = coalesce(each.value.resource_group_name, var.virtual_network_resource_group_name)
+  resource_group_name           = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
   vlan_id                       = each.value.vlan_id
   ipv4_enabled                  = each.value.ipv4_enabled
   peer_asn                      = each.value.peer_asn

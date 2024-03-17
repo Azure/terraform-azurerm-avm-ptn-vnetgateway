@@ -11,7 +11,7 @@ resource "azurerm_resource_group_template_deployment" "telemetry" {
 
   deployment_mode     = "Incremental"
   name                = local.telem_arm_deployment_name
-  resource_group_name = var.virtual_network_resource_group_name
+  resource_group_name = local.virtual_network_resource_group_name
   tags                = {}
   template_content    = local.telem_arm_template_content
 }

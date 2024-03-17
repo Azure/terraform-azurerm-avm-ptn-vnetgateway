@@ -17,10 +17,9 @@ resource "azurerm_virtual_network" "vnet" {
 module "vgw" {
   source = "../.."
 
-  location                            = "uksouth"
-  name                                = "vgw-uksouth-prod"
-  subnet_address_prefix               = "10.0.1.0/24"
-  virtual_network_name                = azurerm_virtual_network.vnet.name
-  virtual_network_resource_group_name = azurerm_virtual_network.vnet.resource_group_name
+  location              = "uksouth"
+  name                  = "vgw-uksouth-prod"
+  subnet_address_prefix = "10.0.1.0/24"
+  virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
