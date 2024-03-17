@@ -21,7 +21,7 @@ resource "azurerm_subnet_route_table_association" "vgw" {
   count = var.route_table_creation_enabled ? 1 : 0
 
   route_table_id = azurerm_route_table.vgw[0].id
-  subnet_id      = try(azurerm_subnet.vgw[0].id, var.subnet_id)
+  subnet_id      = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
 
   depends_on = [
     azurerm_subnet.vgw,
@@ -70,7 +70,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
 
     content {
       public_ip_address_id          = azurerm_public_ip.vgw[ip_configuration.key].id
-      subnet_id                     = try(azurerm_subnet.vgw[0].id, var.subnet_id)
+      subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
       name                          = ip_configuration.value.name
       private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
     }

@@ -311,13 +311,6 @@ variable "subnet_creation_enabled" {
   nullable    = false
 }
 
-variable "subnet_id" {
-  type        = string
-  default     = ""
-  description = "The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet_id or subnet_address_prefix must be specified."
-  nullable    = false
-}
-
 variable "tags" {
   type        = map(string)
   default     = {}
