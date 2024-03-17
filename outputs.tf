@@ -31,8 +31,8 @@ output "route_table" {
 output "subnet" {
   description = "A curated output of the GatewaySubnet created by this module."
   value = {
-    id   = coalesce(try(azurerm_subnet.vgw[0].id, null), var.subnet_id)
-    name = coalesce(try(azurerm_subnet.vgw[0].name, null), basename(var.subnet_id))
+    id   = coalesce(try(azurerm_subnet.vgw[0].id, null), local.subnet_id)
+    name = coalesce(try(azurerm_subnet.vgw[0].name, null), basename(local.subnet_id))
   }
 }
 

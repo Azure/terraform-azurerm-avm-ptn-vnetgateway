@@ -1,4 +1,9 @@
 locals {
+  subnet_id = join("/", [
+    var.virtual_network_id,
+    "subnets",
+    "GatewaySubnet"
+  ])
   virtual_network_name                = basename(var.virtual_network_id)
   virtual_network_resource_group_name = split("/", var.virtual_network_id)[4]
 }

@@ -413,14 +413,6 @@ Type: `bool`
 
 Default: `true`
 
-### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
-
-Description: The ID of a pre-existing gateway subnet to use for the Virtual Network Gateway. Either subnet\_id or subnet\_address\_prefix must be specified.
-
-Type: `string`
-
-Default: `""`
-
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: Tags to apply to the Virtual Network Gateway.
