@@ -396,7 +396,7 @@ Default: `"ErGw1AZ"`
 
 ### <a name="input_subnet_address_prefix"></a> [subnet\_address\_prefix](#input\_subnet\_address\_prefix)
 
-Description: The address prefix for the gateway subnet. Either subnet\_id or subnet\_address\_prefix must be specified.
+Description: The address prefix for the gateway subnet. Required if `subnet_creation_enabled = true`.
 
 Type: `string`
 
