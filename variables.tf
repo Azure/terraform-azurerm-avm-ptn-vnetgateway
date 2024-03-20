@@ -300,7 +300,7 @@ variable "sku" {
 variable "subnet_address_prefix" {
   type        = string
   default     = ""
-  description = "The address prefix for the gateway subnet. Either subnet_id or subnet_address_prefix must be specified."
+  description = "The address prefix for the gateway subnet. Required if `subnet_creation_enabled = true`."
   nullable    = false
 }
 
