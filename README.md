@@ -118,7 +118,7 @@ Default: `{}`
 
 ### <a name="input_edge_zone"></a> [edge\_zone](#input\_edge\_zone)
 
-Description: The availability zone of the Virtual Network Gateway. Only supported for AZ SKUs.
+Description: Specifies the Edge Zone within the Azure Region where this Virtual Network Gateway should exist. Changing this forces a new Virtual Network Gateway to be created.
 
 Type: `string`
 
@@ -212,7 +212,7 @@ Description: Map of IP Configurations to create for the Virtual Network Gateway.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
   - `zones` - (Optional) The list of availability zones for the Public IP Address.
-  - `edge_zone` - (Optional) The edge zone for the Public IP Address. Only supported for AZ SKUs.
+  - `edge_zone` - (Optional) Specifies the Edge Zone within the Azure Region where this Public IP should exist. Changing this forces a new Public IP to be created.
   - `ddos_protection_mode` - (Optional) The DDoS protection mode of the Public IP Address. Possible values are Disabled, Enabled or VirtualNetworkInherited. Defaults to VirtualNetworkInherited.
   - `ddos_protection_plan_id` - (Optional) The ID of the DDoS protection plan for the Public IP Address.
   - `domain_name_label` - (Optional) The domain name label for the Public IP Address.
@@ -236,7 +236,7 @@ map(object({
       sku                     = optional(string, "Standard")
       tags                    = optional(map(string), {})
       zones                   = optional(list(number), [1, 2, 3])
-      edge_zone               = optional(number, null)
+      edge_zone               = optional(string, null)
       ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
       ddos_protection_plan_id = optional(string, null)
       domain_name_label       = optional(string, null)
