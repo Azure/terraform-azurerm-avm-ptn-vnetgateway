@@ -1,4 +1,65 @@
 locals {
+  azurerm_express_route_circuit_peering = {
+    for k, v in var.express_route_circuits : k => merge(
+      v.peering,
+      {
+        express_route_circuit_name = basename(v.id)
+      }
+    )
+    if v.peering != null
+  }
+  azurerm_local_network_gateway = {
+    for k, v in var.local_network_gateways : k => v if v.id == null
+  }
+  azurerm_public_ip = {
+    for k, v in local.ip_configurations : k => {
+      name                    = v.public_ip.name
+      allocation_method       = v.public_ip.allocation_method
+      sku                     = v.public_ip.sku
+      tags                    = v.public_ip.tags
+      zones                   = v.public_ip.zones
+      edge_zone               = v.public_ip.edge_zone
+      ddos_protection_mode    = v.public_ip.ddos_protection_mode
+      ddos_protection_plan_id = v.public_ip.ddos_protection_plan_id
+      domain_name_label       = v.public_ip.domain_name_label
+      idle_timeout_in_minutes = v.public_ip.idle_timeout_in_minutes
+      ip_tags                 = v.public_ip.ip_tags
+      ip_version              = v.public_ip.ip_version
+      public_ip_prefix_id     = v.public_ip.public_ip_prefix_id
+      reverse_fqdn            = v.public_ip.reverse_fqdn
+      sku_tier                = v.public_ip.sku_tier
+    }
+  }
+  azurerm_virtual_network_gateway = {
+    tags = var.tags == null ? {} : var.tags
+    bgp_settings = {
+      asn         = try(var.vpn_bgp_settings.asn, null)
+      peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
+      peering_addresses = {
+        for k, v in local.ip_configurations : k => {
+          ip_configuration_name = v.name
+          apipa_addresses       = v.apipa_addresses
+        }
+        if v.apipa_addresses != null
+      }
+    }
+    ip_configuration = {
+      for k, v in local.ip_configurations : k => {
+        name                          = v.name
+        public_ip_address_id          = azurerm_public_ip.vgw[k].id
+        subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
+        private_ip_address_allocation = v.private_ip_address_allocation
+      }
+    }
+  }
+  azurerm_virtual_network_gateway_connection = merge(
+    local.lgw_virtual_network_gateway_connections,
+    local.erc_virtual_network_gateway_connections
+  )
+}
+
+
+locals {
   subnet_id = join("/", [
     var.virtual_network_id,
     "subnets",
@@ -8,23 +69,8 @@ locals {
   virtual_network_resource_group_name = split("/", var.virtual_network_id)[4]
 }
 locals {
-  bgp_settings = (var.vpn_bgp_settings == null && alltrue([for ip_configuration in local.ip_configurations : ip_configuration.apipa_addresses == null]) ? {} :
-    {
-      BgpSettings = {
-        asn         = try(var.vpn_bgp_settings.asn, null)
-        peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
-        peering_addresses = {
-          for k, v in local.ip_configurations : k => {
-            ip_configuration_name = lookup(local.gateway_ip_configurations[k], "ip_configuration_name", null)
-            apipa_addresses       = v.apipa_addresses
-          }
-          if v.apipa_addresses != null
-        }
-      }
-    }
-  )
   default_ip_configuration = {
-    ip_configuration_name         = null
+    name                          = null
     apipa_addresses               = null
     private_ip_address_allocation = "Dynamic"
     public_ip = {
@@ -45,42 +91,36 @@ locals {
       sku_tier                = "Regional"
     }
   }
-  gateway_ip_configurations = {
-    for k, v in local.ip_configurations : k => {
-      name                          = coalesce(v.ip_configuration_name, "vnetGatewayConfig${k}")
-      private_ip_address_allocation = v.private_ip_address_allocation
-    }
-  }
-  ip_configurations = (length(var.ip_configurations) == 0 ?
-    var.vpn_active_active_enabled ?
-    {
-      "001" = local.default_ip_configuration
-      "002" = local.default_ip_configuration
-    } :
-    {
-      "001" = local.default_ip_configuration
-    }
-    : var.ip_configurations
-  )
-}
-
-locals {
-  local_network_gateways = {
-  for k, v in var.local_network_gateways : k => v if v.id == null }
-}
-
-locals {
-  express_route_circuit_peerings = {
-    for k, v in var.express_route_circuits : k => merge(
-      v.peering,
+  ip_configurations = {
+    for k, v in(
+      length(var.ip_configurations) == 0 ? (
+        var.vpn_active_active_enabled ?
+        {
+          "001" = local.default_ip_configuration
+          "002" = local.default_ip_configuration
+        }
+        :
+        {
+          "001" = local.default_ip_configuration
+        }
+      )
+      :
+      var.ip_configurations
+    )
+    : k => merge(
+      v,
       {
-        express_route_circuit_name = basename(v.id)
+        name = coalesce(v.name, "vnetGatewayConfig${k}")
+        public_ip = merge(
+          v.public_ip,
+          {
+            name = coalesce(v.public_ip.name, "pip-${var.name}-${k}")
+          }
+        )
       }
     )
-    if v.peering != null
   }
 }
-
 locals {
   erc_virtual_network_gateway_connections = {
     for k, v in var.express_route_circuits : "erc-${k}" => merge(
@@ -101,6 +141,5 @@ locals {
     )
     if v.connection != null
   }
-  virtual_network_gateway_connections = merge(local.lgw_virtual_network_gateway_connections, local.erc_virtual_network_gateway_connections)
 }
 

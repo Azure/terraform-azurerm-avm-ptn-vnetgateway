@@ -106,7 +106,7 @@ DESCRIPTION
 
 variable "ip_configurations" {
   type = map(object({
-    ip_configuration_name         = optional(string, null)
+    name                          = optional(string, null)
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
@@ -131,7 +131,7 @@ variable "ip_configurations" {
   description = <<DESCRIPTION
 Map of IP Configurations to create for the Virtual Network Gateway.
 
-- `ip_configuration_name` - (Optional) The name of the IP Configuration.
+- `name` - (Optional) The name of the IP Configuration.
 - `apipa_addresses` - (Optional) The list of APPIPA addresses.
 - `private_ip_address_allocation` - (Optional) The private IP allocation method. Possible values are Static or Dynamic. Defaults to Dynamic.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
@@ -313,9 +313,8 @@ variable "subnet_creation_enabled" {
 
 variable "tags" {
   type        = map(string)
-  default     = {}
+  default     = null
   description = "Tags to apply to the Virtual Network Gateway."
-  nullable    = false
 }
 
 variable "type" {

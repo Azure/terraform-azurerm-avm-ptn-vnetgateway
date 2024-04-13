@@ -30,5 +30,16 @@ module "vgw" {
   virtual_network_id        = azurerm_virtual_network.vnet.id
   subnet_creation_enabled   = false
   vpn_active_active_enabled = true
+  vpn_bgp_enabled           = true
+  ip_configurations = {
+    "ip_config_01" = {
+      name            = "vnetGatewayConfig01"
+      apipa_addresses = ["169.254.21.1"]
+    },
+    "ip_config_02" = {
+      name            = "vnetGatewayConfig02"
+      apipa_addresses = ["169.254.21.2"]
+    }
+  }
 }
 
