@@ -30,25 +30,25 @@ resource "azurerm_subnet_route_table_association" "vgw" {
 }
 
 resource "azurerm_public_ip" "vgw" {
-  for_each = local.ip_configurations
+  for_each = local.azurerm_public_ip
 
-  allocation_method       = each.value.public_ip.allocation_method
+  allocation_method       = each.value.allocation_method
   location                = var.location
-  name                    = coalesce(each.value.public_ip.name, "pip-${var.name}-${each.key}")
+  name                    = each.value.name
   resource_group_name     = local.virtual_network_resource_group_name
-  ddos_protection_mode    = each.value.public_ip.ddos_protection_mode
-  ddos_protection_plan_id = each.value.public_ip.ddos_protection_plan_id
-  domain_name_label       = each.value.public_ip.domain_name_label
-  edge_zone               = each.value.public_ip.edge_zone
-  idle_timeout_in_minutes = each.value.public_ip.idle_timeout_in_minutes
-  ip_tags                 = each.value.public_ip.ip_tags
-  ip_version              = each.value.public_ip.ip_version
-  public_ip_prefix_id     = each.value.public_ip.public_ip_prefix_id
-  reverse_fqdn            = each.value.public_ip.reverse_fqdn
-  sku                     = each.value.public_ip.sku
-  sku_tier                = each.value.public_ip.sku_tier
-  tags                    = merge(var.default_tags, each.value.public_ip.tags)
-  zones                   = each.value.public_ip.zones
+  ddos_protection_mode    = each.value.ddos_protection_mode
+  ddos_protection_plan_id = each.value.ddos_protection_plan_id
+  domain_name_label       = each.value.domain_name_label
+  edge_zone               = each.value.edge_zone
+  idle_timeout_in_minutes = each.value.idle_timeout_in_minutes
+  ip_tags                 = each.value.ip_tags
+  ip_version              = each.value.ip_version
+  public_ip_prefix_id     = each.value.public_ip_prefix_id
+  reverse_fqdn            = each.value.reverse_fqdn
+  sku                     = each.value.sku
+  sku_tier                = each.value.sku_tier
+  tags                    = merge(var.default_tags, each.value.tags)
+  zones                   = each.value.zones
 }
 
 resource "azurerm_virtual_network_gateway" "vgw" {
@@ -62,28 +62,28 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   enable_bgp                 = var.vpn_bgp_enabled
   generation                 = var.vpn_generation
   private_ip_address_enabled = var.vpn_private_ip_address_enabled
-  tags                       = merge(var.default_tags, var.tags)
+  tags                       = merge(var.default_tags, local.azurerm_virtual_network_gateway.tags)
   vpn_type                   = var.vpn_type
 
   dynamic "ip_configuration" {
-    for_each = local.gateway_ip_configurations
+    for_each = local.azurerm_virtual_network_gateway.ip_configuration
 
     content {
-      public_ip_address_id          = azurerm_public_ip.vgw[ip_configuration.key].id
-      subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
+      public_ip_address_id          = ip_configuration.value.public_ip_address_id
+      subnet_id                     = ip_configuration.value.subnet_id
       name                          = ip_configuration.value.name
       private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
     }
   }
   dynamic "bgp_settings" {
-    for_each = local.bgp_settings
+    for_each = var.vpn_bgp_enabled == true ? ["BgpSettings"] : []
 
     content {
-      asn         = bgp_settings.value.asn
-      peer_weight = bgp_settings.value.peer_weight
+      asn         = local.azurerm_virtual_network_gateway.bgp_settings.asn
+      peer_weight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
 
       dynamic "peering_addresses" {
-        for_each = bgp_settings.value.peering_addresses
+        for_each = local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses
 
         content {
           apipa_addresses       = peering_addresses.value.apipa_addresses
@@ -124,21 +124,16 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     }
   }
 
-  depends_on = [
-    azurerm_subnet.vgw,
-    azurerm_public_ip.vgw
-  ]
-
   lifecycle {
     precondition {
-      condition     = var.vpn_active_active_enabled == true ? length(local.gateway_ip_configurations) > 1 : true
+      condition     = var.vpn_active_active_enabled == true ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
       error_message = "An active-active gateway requires at least two IP configurations."
     }
   }
 }
 
 resource "azurerm_local_network_gateway" "vgw" {
-  for_each = local.local_network_gateways
+  for_each = local.azurerm_local_network_gateway
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
@@ -160,7 +155,7 @@ resource "azurerm_local_network_gateway" "vgw" {
 }
 
 resource "azurerm_virtual_network_gateway_connection" "vgw" {
-  for_each = local.virtual_network_gateway_connections
+  for_each = local.azurerm_virtual_network_gateway_connection
 
   location                           = var.location
   name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
@@ -214,15 +209,10 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
       remote_address_cidrs = traffic_selector_policy.value.remote_address_prefixes
     }
   }
-
-  depends_on = [
-    azurerm_local_network_gateway.vgw,
-    azurerm_virtual_network_gateway.vgw,
-  ]
 }
 
 resource "azurerm_express_route_circuit_peering" "vgw" {
-  for_each = local.express_route_circuit_peerings
+  for_each = local.azurerm_express_route_circuit_peering
 
   express_route_circuit_name    = each.value.express_route_circuit_name
   peering_type                  = each.value.peering_type
