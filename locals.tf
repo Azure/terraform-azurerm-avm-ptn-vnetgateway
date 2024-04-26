@@ -1,6 +1,6 @@
 locals {
-  azurerm_express_route_circuit_peering           = local.express_route_circuit_peerings.nonsensitive_map
-  azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings.sensitive_map
+  azurerm_express_route_circuit_peering           = nonsensitive(local.express_route_circuit_peerings)
+  azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
     for k, v in var.local_network_gateways : k => v if v.id == null
   }
@@ -45,13 +45,13 @@ locals {
       }
     }
   }
-  azurerm_virtual_network_gateway_connection = merge(
-    local.local_network_gateway_virtual_network_gateway_connections.nonsensitive_map,
-    local.express_route_circuit_virtual_network_gateway_connections.nonsensitive_map
-  )
+  azurerm_virtual_network_gateway_connection = nonsensitive(merge(
+    local.local_network_gateway_virtual_network_gateway_connections,
+    local.express_route_circuit_virtual_network_gateway_connections
+  ))
   azurerm_virtual_network_gateway_connection_sensitive = merge(
-    local.local_network_gateway_virtual_network_gateway_connections.sensitive_map,
-    local.express_route_circuit_virtual_network_gateway_connections.sensitive_map
+    local.local_network_gateway_virtual_network_gateway_connections,
+    local.express_route_circuit_virtual_network_gateway_connections
   )
 }
 
@@ -120,72 +120,34 @@ locals {
 }
 locals {
   express_route_circuit_virtual_network_gateway_connections = {
-    sensitive_map = {
-      for k, v in var.express_route_circuits : "erc-${k}" => merge(
-        v.connection,
-        {
-          type                     = "ExpressRoute"
-          express_route_circuit_id = v.id
-        }
-      )
-      if v.connection != null
-    }
-    nonsensitive_map = {
-      for k, v in var.express_route_circuits : "erc-${k}" => merge(
-        v.connection,
-        {
-          type                     = "ExpressRoute"
-          express_route_circuit_id = v.id
-          shared_key               = null
-          authorization_key        = null
-        }
-      )
-      if v.connection != null
-    }
+    for k, v in var.express_route_circuits : "erc-${k}" => merge(
+      v.connection,
+      {
+        type                     = "ExpressRoute"
+        express_route_circuit_id = v.id
+      }
+    )
+    if v.connection != null
   }
   local_network_gateway_virtual_network_gateway_connections = {
-    sensitive_map = {
-      for k, v in var.local_network_gateways : "lgw-${k}" => merge(
-        v.connection,
-        {
-          local_network_gateway_id = v.id
-        }
-      )
-      if v.connection != null
-    }
-    nonsensitive_map = {
-      for k, v in var.local_network_gateways : "lgw-${k}" => merge(
-        v.connection,
-        {
-          local_network_gateway_id = v.id
-          shared_key               = null
-        }
-      )
-      if v.connection != null
-    }
+    for k, v in var.local_network_gateways : "lgw-${k}" => merge(
+      v.connection,
+      {
+        local_network_gateway_id = v.id
+      }
+    )
+    if v.connection != null
   }
 }
 
 locals {
   express_route_circuit_peerings = {
-    sensitive_map = {
-      for k, v in var.express_route_circuits : k => merge(
-        v.peering,
-        {
-          express_route_circuit_name = basename(v.id)
-        }
-      )
-      if v.peering != null
-    }
-    nonsensitive_map = {
-      for k, v in var.express_route_circuits : k => merge(
-        v.peering,
-        {
-          express_route_circuit_name = basename(v.id)
-          shared_key                 = null
-        }
-      )
-      if v.peering != null
-    }
+    for k, v in var.express_route_circuits : k => merge(
+      v.peering,
+      {
+        express_route_circuit_name = basename(v.id)
+      }
+    )
+    if v.peering != null
   }
 }
