@@ -162,7 +162,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   resource_group_name                = local.virtual_network_resource_group_name
   type                               = each.value.type
   virtual_network_gateway_id         = azurerm_virtual_network_gateway.vgw.id
-  authorization_key                  = try(each.value.authorization_key, null)
+  authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
   connection_mode                    = try(each.value.connection_mode, null)
   connection_protocol                = try(each.value.connection_protocol, null)
   dpd_timeout_seconds                = try(each.value.dpd_timeout_seconds, null)
@@ -175,7 +175,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
   peer_virtual_network_gateway_id    = try(each.value.peer_virtual_network_gateway_id, null)
   routing_weight                     = each.value.routing_weight
-  shared_key                         = try(each.value.shared_key, null)
+  shared_key                         = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].shared_key, null)
   tags                               = merge(var.default_tags, each.value.tags)
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
@@ -223,7 +223,7 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
   primary_peer_address_prefix   = each.value.primary_peer_address_prefix
   route_filter_id               = each.value.route_filter_id
   secondary_peer_address_prefix = each.value.secondary_peer_address_prefix
-  shared_key                    = each.value.shared_key
+  shared_key                    = local.azurerm_express_route_circuit_peering_sensitive[each.key].shared_key
 
   dynamic "microsoft_peering_config" {
     for_each = each.value.microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]
