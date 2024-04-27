@@ -1,13 +1,6 @@
 locals {
-  azurerm_express_route_circuit_peering = {
-    for k, v in var.express_route_circuits : k => merge(
-      v.peering,
-      {
-        express_route_circuit_name = basename(v.id)
-      }
-    )
-    if v.peering != null
-  }
+  azurerm_express_route_circuit_peering           = nonsensitive(local.express_route_circuit_peerings)
+  azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
     for k, v in var.local_network_gateways : k => v if v.id == null
   }
@@ -52,9 +45,13 @@ locals {
       }
     }
   }
-  azurerm_virtual_network_gateway_connection = merge(
-    local.lgw_virtual_network_gateway_connections,
-    local.erc_virtual_network_gateway_connections
+  azurerm_virtual_network_gateway_connection = nonsensitive(merge(
+    local.local_network_gateway_virtual_network_gateway_connections,
+    local.express_route_circuit_virtual_network_gateway_connections
+  ))
+  azurerm_virtual_network_gateway_connection_sensitive = merge(
+    local.local_network_gateway_virtual_network_gateway_connections,
+    local.express_route_circuit_virtual_network_gateway_connections
   )
 }
 
@@ -122,7 +119,7 @@ locals {
   }
 }
 locals {
-  erc_virtual_network_gateway_connections = {
+  express_route_circuit_virtual_network_gateway_connections = {
     for k, v in var.express_route_circuits : "erc-${k}" => merge(
       v.connection,
       {
@@ -132,7 +129,7 @@ locals {
     )
     if v.connection != null
   }
-  lgw_virtual_network_gateway_connections = {
+  local_network_gateway_virtual_network_gateway_connections = {
     for k, v in var.local_network_gateways : "lgw-${k}" => merge(
       v.connection,
       {
@@ -143,3 +140,14 @@ locals {
   }
 }
 
+locals {
+  express_route_circuit_peerings = {
+    for k, v in var.express_route_circuits : k => merge(
+      v.peering,
+      {
+        express_route_circuit_name = basename(v.id)
+      }
+    )
+    if v.peering != null
+  }
+}

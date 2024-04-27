@@ -1,3 +1,7 @@
+locals {
+  shared_key = sensitive("shared_key")
+}
+
 resource "random_id" "id" {
   byte_length = 4
 }
@@ -39,6 +43,17 @@ module "vgw" {
     "ip_config_02" = {
       name            = "vnetGatewayConfig02"
       apipa_addresses = ["169.254.21.2"]
+    }
+  }
+  local_network_gateways = {
+    gateway-uks = {
+      name            = "lgw-gateway"
+      gateway_address = "1.1.1.1"
+      address_space   = ["196.0.0.0/16"]
+      connection = {
+        type       = "IPsec"
+        shared_key = local.shared_key
+      }
     }
   }
 }
