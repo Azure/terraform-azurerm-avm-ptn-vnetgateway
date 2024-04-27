@@ -2,26 +2,27 @@ locals {
   azurerm_express_route_circuit_peering           = nonsensitive(local.express_route_circuit_peerings)
   azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
-    for k, v in var.local_network_gateways : k => v if v.id == null
+    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway if local_network_gateway.id == null
   }
   azurerm_public_ip = {
-    for k, v in local.ip_configurations : k => {
-      name                    = v.public_ip.name
-      allocation_method       = v.public_ip.allocation_method
-      sku                     = v.public_ip.sku
-      tags                    = v.public_ip.tags
-      zones                   = v.public_ip.zones
-      edge_zone               = v.public_ip.edge_zone
-      ddos_protection_mode    = v.public_ip.ddos_protection_mode
-      ddos_protection_plan_id = v.public_ip.ddos_protection_plan_id
-      domain_name_label       = v.public_ip.domain_name_label
-      idle_timeout_in_minutes = v.public_ip.idle_timeout_in_minutes
-      ip_tags                 = v.public_ip.ip_tags
-      ip_version              = v.public_ip.ip_version
-      public_ip_prefix_id     = v.public_ip.public_ip_prefix_id
-      reverse_fqdn            = v.public_ip.reverse_fqdn
-      sku_tier                = v.public_ip.sku_tier
+    for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
+      name                    = ip_configuration.public_ip.name
+      allocation_method       = ip_configuration.public_ip.allocation_method
+      sku                     = ip_configuration.public_ip.sku
+      tags                    = ip_configuration.public_ip.tags
+      zones                   = ip_configuration.public_ip.zones
+      edge_zone               = ip_configuration.public_ip.edge_zone
+      ddos_protection_mode    = ip_configuration.public_ip.ddos_protection_mode
+      ddos_protection_plan_id = ip_configuration.public_ip.ddos_protection_plan_id
+      domain_name_label       = ip_configuration.public_ip.domain_name_label
+      idle_timeout_in_minutes = ip_configuration.public_ip.idle_timeout_in_minutes
+      ip_tags                 = ip_configuration.public_ip.ip_tags
+      ip_version              = ip_configuration.public_ip.ip_version
+      public_ip_prefix_id     = ip_configuration.public_ip.public_ip_prefix_id
+      reverse_fqdn            = ip_configuration.public_ip.reverse_fqdn
+      sku_tier                = ip_configuration.public_ip.sku_tier
     }
+    if ip_configuration.public_ip.id == null
   }
   azurerm_virtual_network_gateway = {
     tags = var.tags == null ? {} : var.tags
@@ -29,19 +30,19 @@ locals {
       asn         = try(var.vpn_bgp_settings.asn, null)
       peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
       peering_addresses = {
-        for k, v in local.ip_configurations : k => {
-          ip_configuration_name = v.name
-          apipa_addresses       = v.apipa_addresses
+        for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
+          ip_configuration_name = ip_configuration.name
+          apipa_addresses       = ip_configuration.apipa_addresses
         }
-        if v.apipa_addresses != null
+        if ip_configuration.apipa_addresses != null
       }
     }
     ip_configuration = {
-      for k, v in local.ip_configurations : k => {
-        name                          = v.name
-        public_ip_address_id          = azurerm_public_ip.vgw[k].id
+      for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
+        name                          = ip_configuration.name
+        public_ip_address_id          = try(azurerm_public_ip.vgw[ip_configuration_key].id, ip_configuration.public_ip.id)
         subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
-        private_ip_address_allocation = v.private_ip_address_allocation
+        private_ip_address_allocation = ip_configuration.private_ip_address_allocation
       }
     }
   }
@@ -71,6 +72,7 @@ locals {
     apipa_addresses               = null
     private_ip_address_allocation = "Dynamic"
     public_ip = {
+      id                      = null
       name                    = null
       allocation_method       = "Static"
       sku                     = "Standard"
@@ -89,7 +91,7 @@ locals {
     }
   }
   ip_configurations = {
-    for k, v in(
+    for ip_configuration_key, ip_configuration in(
       length(var.ip_configurations) == 0 ? (
         var.vpn_active_active_enabled ?
         {
@@ -104,14 +106,14 @@ locals {
       :
       var.ip_configurations
     )
-    : k => merge(
-      v,
+    : ip_configuration_key => merge(
+      ip_configuration,
       {
-        name = coalesce(v.name, "vnetGatewayConfig${k}")
+        name = coalesce(ip_configuration.name, "vnetGatewayConfig${ip_configuration_key}")
         public_ip = merge(
-          v.public_ip,
+          ip_configuration.public_ip,
           {
-            name = coalesce(v.public_ip.name, "pip-${var.name}-${k}")
+            name = coalesce(ip_configuration.public_ip.name, "pip-${var.name}-${ip_configuration_key}")
           }
         )
       }
@@ -120,34 +122,34 @@ locals {
 }
 locals {
   express_route_circuit_virtual_network_gateway_connections = {
-    for k, v in var.express_route_circuits : "erc-${k}" => merge(
-      v.connection,
+    for express_route_circuit_key, express_route_circuit in var.express_route_circuits : "erc-${express_route_circuit_key}" => merge(
+      express_route_circuit.connection,
       {
         type                     = "ExpressRoute"
-        express_route_circuit_id = v.id
+        express_route_circuit_id = express_route_circuit.id
       }
     )
-    if v.connection != null
+    if express_route_circuit.connection != null
   }
   local_network_gateway_virtual_network_gateway_connections = {
-    for k, v in var.local_network_gateways : "lgw-${k}" => merge(
-      v.connection,
+    for local_network_gateway_key, local_network_gateway in var.local_network_gateways : "lgw-${local_network_gateway_key}" => merge(
+      local_network_gateway.connection,
       {
-        local_network_gateway_id = v.id
+        local_network_gateway_id = local_network_gateway.id
       }
     )
-    if v.connection != null
+    if local_network_gateway.connection != null
   }
 }
 
 locals {
   express_route_circuit_peerings = {
-    for k, v in var.express_route_circuits : k => merge(
-      v.peering,
+    for express_route_circuit_key, express_route_circuit in var.express_route_circuits : express_route_circuit_key => merge(
+      express_route_circuit.peering,
       {
-        express_route_circuit_name = basename(v.id)
+        express_route_circuit_name = basename(express_route_circuit.id)
       }
     )
-    if v.peering != null
+    if express_route_circuit.peering != null
   }
 }
