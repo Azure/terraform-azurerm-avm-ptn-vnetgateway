@@ -2,6 +2,8 @@ locals {
   shared_key = sensitive("shared_key")
 }
 
+data "azurerm_client_config" "core" {}
+
 resource "random_id" "id" {
   byte_length = 4
 }
@@ -21,6 +23,15 @@ resource "azurerm_virtual_network" "vnet" {
     address_prefix = "10.0.0.0/24"
     name           = "GatewaySubnet"
   }
+}
+
+resource "azurerm_public_ip" "public_ip" {
+  allocation_method   = "Static"
+  location            = azurerm_resource_group.rg.location
+  name                = "pip-uksouth-prod"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "Standard"
+  zones               = ["1", "2", "3"]
 }
 
 module "vgw" {
@@ -43,6 +54,9 @@ module "vgw" {
     "ip_config_02" = {
       name            = "vnetGatewayConfig02"
       apipa_addresses = ["169.254.21.2"]
+      public_ip = {
+        id = "/subscriptions/${data.azurerm_client_config.core.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Network/publicIPAddresses/${azurerm_public_ip.public_ip.name}"
+      }
     }
   }
   local_network_gateways = {

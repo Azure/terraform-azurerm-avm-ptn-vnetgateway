@@ -11,6 +11,11 @@ variable "name" {
 variable "virtual_network_id" {
   type        = string
   description = "The resource id of the Virtual Network to which the Virtual Network Gateway will be attached."
+
+  validation {
+    condition     = can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/virtualNetworks/[^/]+$", var.virtual_network_id))
+    error_message = "virtual_network_id must be a valid resource id."
+  }
 }
 
 variable "default_tags" {
@@ -99,8 +104,16 @@ DESCRIPTION
   nullable    = false
 
   validation {
-    condition     = var.express_route_circuits == null ? true : alltrue([for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering.peering_type) if v.peering != null])
+    condition = var.express_route_circuits == null ? true : alltrue([
+      for k, v in var.express_route_circuits : contains(["AzurePrivatePeering", "AzurePublicPeering", "MicrosoftPeering"], v.peering.peering_type) if v.peering != null
+    ])
     error_message = "peering_type possible values are AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.express_route_circuits : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/expressRouteCircuits/[^/]+$", v.id))
+    ])
+    error_message = "id must be a valid resource id."
   }
 }
 
@@ -110,6 +123,7 @@ variable "ip_configurations" {
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
+      id                      = optional(string, null)
       name                    = optional(string, null)
       allocation_method       = optional(string, "Static")
       sku                     = optional(string, "Standard")
@@ -135,6 +149,7 @@ Map of IP Configurations to create for the Virtual Network Gateway.
 - `apipa_addresses` - (Optional) The list of APPIPA addresses.
 - `private_ip_address_allocation` - (Optional) The private IP allocation method. Possible values are Static or Dynamic. Defaults to Dynamic.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
+  - `id` - (Optional) The resource id of an existing public ip address to use for the IP Configuration.
   - `name` - (Optional) The name of the Public IP Address.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
@@ -152,6 +167,14 @@ Map of IP Configurations to create for the Virtual Network Gateway.
   - `sku_tier` - (Optional) The tier of the Public IP Address. Possible values are Regional or Global. Defaults to Regional.
 DESCRIPTION
   nullable    = false
+
+  validation {
+    condition = alltrue([
+      for _, v in var.ip_configurations : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/publicIPAddresses/[^/]+$", v.public_ip.id))
+      if v.public_ip != null && v.public_ip.id != null
+    ])
+    error_message = "public_ip.id must be a valid resource id."
+  }
 }
 
 variable "local_network_gateways" {
@@ -255,6 +278,13 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   validation {
     condition     = var.local_network_gateways == null ? true : alltrue([for k, v in var.local_network_gateways : (v.gateway_fqdn == null && v.gateway_address == null ? false : true) if v.id == null])
     error_message = "At least one of gateway_fqdn or gateway_address must be specified for local_network_gateways."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.local_network_gateways : can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/localNetworkGateways/[^/]+$", v.id))
+      if v.id != null
+    ])
+    error_message = "id must be a valid resource id."
   }
 }
 

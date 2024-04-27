@@ -207,6 +207,7 @@ Description: Map of IP Configurations to create for the Virtual Network Gateway.
 - `apipa_addresses` - (Optional) The list of APPIPA addresses.
 - `private_ip_address_allocation` - (Optional) The private IP allocation method. Possible values are Static or Dynamic. Defaults to Dynamic.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
+  - `id` - (Optional) The resource id of an existing public ip address to use for the IP Configuration.
   - `name` - (Optional) The name of the Public IP Address.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
@@ -231,6 +232,7 @@ map(object({
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
+      id                      = optional(string, null)
       name                    = optional(string, null)
       allocation_method       = optional(string, "Static")
       sku                     = optional(string, "Standard")
