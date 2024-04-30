@@ -1,5 +1,5 @@
 locals {
-  azurerm_express_route_circuit_peering           = nonsensitive(local.express_route_circuit_peerings)
+  azurerm_express_route_circuit_peering           = nonsensitive(sensitive(local.express_route_circuit_peerings))
   azurerm_express_route_circuit_peering_sensitive = local.express_route_circuit_peerings
   azurerm_local_network_gateway = {
     for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway if local_network_gateway.id == null
@@ -46,10 +46,10 @@ locals {
       }
     }
   }
-  azurerm_virtual_network_gateway_connection = nonsensitive(merge(
+  azurerm_virtual_network_gateway_connection = nonsensitive(sensitive(merge(
     local.local_network_gateway_virtual_network_gateway_connections,
     local.express_route_circuit_virtual_network_gateway_connections
-  ))
+  )))
   azurerm_virtual_network_gateway_connection_sensitive = merge(
     local.local_network_gateway_virtual_network_gateway_connections,
     local.express_route_circuit_virtual_network_gateway_connections
