@@ -108,14 +108,6 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
-### <a name="input_default_tags"></a> [default\_tags](#input\_default\_tags)
-
-Description: Tags to apply to all resources.
-
-Type: `map(string)`
-
-Default: `{}`
-
 ### <a name="input_edge_zone"></a> [edge\_zone](#input\_edge\_zone)
 
 Description: Specifies the Edge Zone within the Azure Region where this Virtual Network Gateway should exist. Changing this forces a new Virtual Network Gateway to be created.
@@ -143,6 +135,7 @@ Description: Map of Virtual Network Gateway Connections and Peering Configuratio
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
   - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding.
+  - `private_link_fast_path_enabled` - (Optional) Bypass the Express Route gateway when accessing private-links. When enabled express\_route\_gateway\_bypass must be set to true. Defaults to false.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
   - `routing_weight` - (Optional) The weight added to routes learned from this Virtual Network Gateway Connection. Defaults to 10.
   - `shared_key` - (Optional) The shared key for the Virtual Network Gateway Connection.
@@ -170,12 +163,13 @@ Type:
 map(object({
     id = string
     connection = optional(object({
-      authorization_key            = optional(string, null)
-      express_route_gateway_bypass = optional(bool, null)
-      name                         = optional(string, null)
-      routing_weight               = optional(number, null)
-      shared_key                   = optional(string, null)
-      tags                         = optional(map(string), {})
+      authorization_key              = optional(string, null)
+      express_route_gateway_bypass   = optional(bool, null)
+      private_link_fast_path_enabled = optional(bool, false)
+      name                           = optional(string, null)
+      routing_weight                 = optional(number, null)
+      shared_key                     = optional(string, null)
+      tags                           = optional(map(string), {})
     }), null)
     peering = optional(object({
       peering_type                  = string
@@ -198,6 +192,22 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_express_route_remote_vnet_traffic_enabled"></a> [express\_route\_remote\_vnet\_traffic\_enabled](#input\_express\_route\_remote\_vnet\_traffic\_enabled)
+
+Description: Enabled ExpressRoute traffic incoming from other connected VNets
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_express_route_virtual_wan_traffic_enabled"></a> [express\_route\_virtual\_wan\_traffic\_enabled](#input\_express\_route\_virtual\_wan\_traffic\_enabled)
+
+Description: Enabled ExpressRoute traffic incoming from other connected VWANs
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_ip_configurations"></a> [ip\_configurations](#input\_ip\_configurations)
 
@@ -444,6 +454,14 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_vpn_bgp_route_translation_for_nat_enabled"></a> [vpn\_bgp\_route\_translation\_for\_nat\_enabled](#input\_vpn\_bgp\_route\_translation\_for\_nat\_enabled)
+
+Description: Enable BGP route translation for NAT for the Virtual Network Gateway.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_vpn_bgp_settings"></a> [vpn\_bgp\_settings](#input\_vpn\_bgp\_settings)
 
 Description: BGP settings for the Virtual Network Gateway.
@@ -459,6 +477,36 @@ object({
 
 Default: `null`
 
+### <a name="input_vpn_custom_route"></a> [vpn\_custom\_route](#input\_vpn\_custom\_route)
+
+Description: The reference to the address space resource which represents the custom routes address space specified by the customer for virtual network gateway and VpnClient.
+
+Type:
+
+```hcl
+object({
+    address_prefixes = list(string)
+  })
+```
+
+Default: `null`
+
+### <a name="input_vpn_default_local_network_gateway_id"></a> [vpn\_default\_local\_network\_gateway\_id](#input\_vpn\_default\_local\_network\_gateway\_id)
+
+Description: The ID of the default local network gateway to use for the Virtual Network Gateway.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_vpn_dns_forwarding_enabled"></a> [vpn\_dns\_forwarding\_enabled](#input\_vpn\_dns\_forwarding\_enabled)
+
+Description: Enable DNS forwarding for the Virtual Network Gateway.
+
+Type: `bool`
+
+Default: `null`
+
 ### <a name="input_vpn_generation"></a> [vpn\_generation](#input\_vpn\_generation)
 
 Description: value for the Generation for the Gateway, Valid values are 'Generation1', 'Generation2'. Options differ depending on SKU.
@@ -466,6 +514,14 @@ Description: value for the Generation for the Gateway, Valid values are 'Generat
 Type: `string`
 
 Default: `null`
+
+### <a name="input_vpn_ip_sec_replay_protection_enabled"></a> [vpn\_ip\_sec\_replay\_protection\_enabled](#input\_vpn\_ip\_sec\_replay\_protection\_enabled)
+
+Description: Enable IPsec replay protection for the Virtual Network Gateway.
+
+Type: `bool`
+
+Default: `true`
 
 ### <a name="input_vpn_point_to_site"></a> [vpn\_point\_to\_site](#input\_vpn\_point\_to\_site)
 
@@ -483,6 +539,23 @@ Description: Point to site configuration for the virtual network gateway.
 - `revoked_certificate` - (Optional) The revoked certificate of the virtual network gateway.
   - `name` - (Required) The name of the revoked certificate.
   - `thumbprint` - (Required) The thumbprint of the revoked certificate.
+- `radius_server` - (Optional) The radius server of the virtual network gateway.
+  - `address` - (Required) The address of the radius server.
+  - `secret` - (Required) The secret of the radius server.
+  - `score` - (Required) The score of the radius server.
+- `ipsec_policy` - (Optional) The IPsec policy of the virtual network gateway.
+  - `dh_group` - (Required) The DH group of the IPsec policy.
+  - `ike_encryption` - (Required) The IKE encryption of the IPsec policy.
+  - `ike_integrity` - (Required) The IKE integrity of the IPsec policy.
+  - `ipsec_encryption` - (Required) The IPsec encryption of the IPsec policy.
+  - `ipsec_integrity` - (Required) The IPsec integrity of the IPsec policy.
+  - `pfs_group` - (Required) The PFS group of the IPsec policy.
+  - `sa_data_size_in_kilobytes` - (Optional) The SA data size in kilobytes of the IPsec policy.
+  - `sa_lifetime_in_seconds` - (Optional) The SA lifetime in seconds of the IPsec policy.
+- `virtual_network_gateway_client_connection` - (Optional) The virtual network gateway client connection of the virtual network gateway.
+  - `name` - (Required) The name of the virtual network gateway client connection.
+  - `policy_group_names` - (Required) The policy group names of the virtual network gateway client connection.
+  - `address_prefixes` - (Required) The address prefixes of the virtual network gateway client connection.
 - `vpn_client_protocols` - (Optional) The VPN client protocols.
 - `vpn_auth_types` - (Optional) The VPN authentication types.
 
@@ -504,12 +577,53 @@ object({
       name       = string
       thumbprint = string
     })), {})
+    radius_server = optional(map(object({
+      address = string
+      secret  = string
+      score   = number
+    })), {})
     vpn_client_protocols = optional(list(string), null)
     vpn_auth_types       = optional(list(string), null)
+    ipsec_policy = optional(object({
+      dh_group                  = string
+      ike_encryption            = string
+      ike_integrity             = string
+      ipsec_encryption          = string
+      ipsec_integrity           = string
+      pfs_group                 = string
+      sa_data_size_in_kilobytes = optional(number, null)
+      sa_lifetime_in_seconds    = optional(number, null)
+    }), null)
+    virtual_network_gateway_client_connection = optional(map(object({
+      name               = string
+      policy_group_names = list(string)
+      address_prefixes   = list(string)
+    })), {})
   })
 ```
 
 Default: `null`
+
+### <a name="input_vpn_policy_groups"></a> [vpn\_policy\_groups](#input\_vpn\_policy\_groups)
+
+Description: The policy groups for the Virtual Network Gateway.
+
+Type:
+
+```hcl
+map(object({
+    name       = string
+    is_default = optional(bool, null)
+    priority   = optional(number, null)
+    policy_members = map(object({
+      name  = string
+      type  = string
+      value = string
+    }))
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_vpn_private_ip_address_enabled"></a> [vpn\_private\_ip\_address\_enabled](#input\_vpn\_private\_ip\_address\_enabled)
 

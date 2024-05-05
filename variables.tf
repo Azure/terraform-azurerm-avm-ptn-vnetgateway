@@ -18,13 +18,6 @@ variable "virtual_network_id" {
   }
 }
 
-variable "default_tags" {
-  type        = map(string)
-  default     = {}
-  description = "Tags to apply to all resources."
-  nullable    = false
-}
-
 variable "edge_zone" {
   type        = string
   default     = null
@@ -46,12 +39,13 @@ variable "express_route_circuits" {
   type = map(object({
     id = string
     connection = optional(object({
-      authorization_key            = optional(string, null)
-      express_route_gateway_bypass = optional(bool, null)
-      name                         = optional(string, null)
-      routing_weight               = optional(number, null)
-      shared_key                   = optional(string, null)
-      tags                         = optional(map(string), {})
+      authorization_key              = optional(string, null)
+      express_route_gateway_bypass   = optional(bool, null)
+      private_link_fast_path_enabled = optional(bool, false)
+      name                           = optional(string, null)
+      routing_weight                 = optional(number, null)
+      shared_key                     = optional(string, null)
+      tags                           = optional(map(string), {})
     }), null)
     peering = optional(object({
       peering_type                  = string
@@ -80,6 +74,7 @@ Map of Virtual Network Gateway Connections and Peering Configurations to create 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
   - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding.
+  - `private_link_fast_path_enabled` - (Optional) Bypass the Express Route gateway when accessing private-links. When enabled express_route_gateway_bypass must be set to true. Defaults to false.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
   - `routing_weight` - (Optional) The weight added to routes learned from this Virtual Network Gateway Connection. Defaults to 10.
   - `shared_key` - (Optional) The shared key for the Virtual Network Gateway Connection.
@@ -115,6 +110,26 @@ DESCRIPTION
     ])
     error_message = "id must be a valid resource id."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.express_route_circuits : v.connection != null && v.connection.private_link_fast_path_enabled == true ? v.connection.express_route_gateway_bypass == true : true
+    ])
+    error_message = "private_link_fast_path_enabled must be set to true when express_route_gateway_bypass is set to true."
+  }
+}
+
+variable "express_route_remote_vnet_traffic_enabled" {
+  type        = bool
+  default     = false
+  description = "Enabled ExpressRoute traffic incoming from other connected VNets"
+  nullable    = false
+}
+
+variable "express_route_virtual_wan_traffic_enabled" {
+  type        = bool
+  default     = false
+  description = "Enabled ExpressRoute traffic incoming from other connected VWANs"
+  nullable    = false
 }
 
 variable "ip_configurations" {
@@ -373,6 +388,13 @@ variable "vpn_bgp_enabled" {
   nullable    = false
 }
 
+variable "vpn_bgp_route_translation_for_nat_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable BGP route translation for NAT for the Virtual Network Gateway."
+  nullable    = false
+}
+
 variable "vpn_bgp_settings" {
   type = object({
     asn         = optional(number, null)
@@ -380,6 +402,26 @@ variable "vpn_bgp_settings" {
   })
   default     = null
   description = "BGP settings for the Virtual Network Gateway."
+}
+
+variable "vpn_custom_route" {
+  type = object({
+    address_prefixes = list(string)
+  })
+  default     = null
+  description = "The reference to the address space resource which represents the custom routes address space specified by the customer for virtual network gateway and VpnClient."
+}
+
+variable "vpn_default_local_network_gateway_id" {
+  type        = string
+  default     = null
+  description = "The ID of the default local network gateway to use for the Virtual Network Gateway."
+}
+
+variable "vpn_dns_forwarding_enabled" {
+  type        = bool
+  default     = null
+  description = "Enable DNS forwarding for the Virtual Network Gateway."
 }
 
 variable "vpn_generation" {
@@ -391,6 +433,13 @@ variable "vpn_generation" {
     condition     = var.vpn_generation == null ? true : contains(["Generation1", "Generation2"], var.vpn_generation)
     error_message = "vpn_generation possible values are 'Generation1', 'Generation2'. Options differ depending on SKU."
   }
+}
+
+variable "vpn_ip_sec_replay_protection_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable IPsec replay protection for the Virtual Network Gateway."
+  nullable    = false
 }
 
 variable "vpn_point_to_site" {
@@ -409,8 +458,28 @@ variable "vpn_point_to_site" {
       name       = string
       thumbprint = string
     })), {})
+    radius_server = optional(map(object({
+      address = string
+      secret  = string
+      score   = number
+    })), {})
     vpn_client_protocols = optional(list(string), null)
     vpn_auth_types       = optional(list(string), null)
+    ipsec_policy = optional(object({
+      dh_group                  = string
+      ike_encryption            = string
+      ike_integrity             = string
+      ipsec_encryption          = string
+      ipsec_integrity           = string
+      pfs_group                 = string
+      sa_data_size_in_kilobytes = optional(number, null)
+      sa_lifetime_in_seconds    = optional(number, null)
+    }), null)
+    virtual_network_gateway_client_connection = optional(map(object({
+      name               = string
+      policy_group_names = list(string)
+      address_prefixes   = list(string)
+    })), {})
   })
   default     = null
   description = <<DESCRIPTION
@@ -428,9 +497,42 @@ Point to site configuration for the virtual network gateway.
 - `revoked_certificate` - (Optional) The revoked certificate of the virtual network gateway.
   - `name` - (Required) The name of the revoked certificate.
   - `thumbprint` - (Required) The thumbprint of the revoked certificate.
+- `radius_server` - (Optional) The radius server of the virtual network gateway.
+  - `address` - (Required) The address of the radius server.
+  - `secret` - (Required) The secret of the radius server.
+  - `score` - (Required) The score of the radius server.
+- `ipsec_policy` - (Optional) The IPsec policy of the virtual network gateway.
+  - `dh_group` - (Required) The DH group of the IPsec policy.
+  - `ike_encryption` - (Required) The IKE encryption of the IPsec policy.
+  - `ike_integrity` - (Required) The IKE integrity of the IPsec policy.
+  - `ipsec_encryption` - (Required) The IPsec encryption of the IPsec policy.
+  - `ipsec_integrity` - (Required) The IPsec integrity of the IPsec policy.
+  - `pfs_group` - (Required) The PFS group of the IPsec policy.
+  - `sa_data_size_in_kilobytes` - (Optional) The SA data size in kilobytes of the IPsec policy.
+  - `sa_lifetime_in_seconds` - (Optional) The SA lifetime in seconds of the IPsec policy.
+- `virtual_network_gateway_client_connection` - (Optional) The virtual network gateway client connection of the virtual network gateway.
+  - `name` - (Required) The name of the virtual network gateway client connection.
+  - `policy_group_names` - (Required) The policy group names of the virtual network gateway client connection.
+  - `address_prefixes` - (Required) The address prefixes of the virtual network gateway client connection.
 - `vpn_client_protocols` - (Optional) The VPN client protocols.
 - `vpn_auth_types` - (Optional) The VPN authentication types.
 DESCRIPTION
+}
+
+variable "vpn_policy_groups" {
+  type = map(object({
+    name       = string
+    is_default = optional(bool, null)
+    priority   = optional(number, null)
+    policy_members = map(object({
+      name  = string
+      type  = string
+      value = string
+    }))
+  }))
+  default     = {}
+  description = "The policy groups for the Virtual Network Gateway."
+  nullable    = false
 }
 
 variable "vpn_private_ip_address_enabled" {

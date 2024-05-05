@@ -14,14 +14,14 @@ resource "azurerm_route_table" "vgw" {
   name                          = coalesce(var.route_table_name, "rt-${var.name}")
   resource_group_name           = local.virtual_network_resource_group_name
   disable_bgp_route_propagation = !var.route_table_bgp_route_propagation_enabled
-  tags                          = merge(var.default_tags, var.route_table_tags)
+  tags                          = merge(var.tags, var.route_table_tags)
 }
 
 resource "azurerm_subnet_route_table_association" "vgw" {
   count = var.route_table_creation_enabled ? 1 : 0
 
   route_table_id = azurerm_route_table.vgw[0].id
-  subnet_id      = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
+  subnet_id      = try(azurerm_subnet.vgw[0].id, local.subnet_id)
 
   depends_on = [
     azurerm_subnet.vgw,
@@ -47,23 +47,29 @@ resource "azurerm_public_ip" "vgw" {
   reverse_fqdn            = each.value.reverse_fqdn
   sku                     = each.value.sku
   sku_tier                = each.value.sku_tier
-  tags                    = merge(var.default_tags, each.value.tags)
+  tags                    = merge(var.tags, each.value.tags)
   zones                   = each.value.zones
 }
 
 resource "azurerm_virtual_network_gateway" "vgw" {
-  location                   = var.location
-  name                       = var.name
-  resource_group_name        = local.virtual_network_resource_group_name
-  sku                        = var.sku
-  type                       = var.type
-  active_active              = var.vpn_active_active_enabled
-  edge_zone                  = var.edge_zone
-  enable_bgp                 = var.vpn_bgp_enabled
-  generation                 = var.vpn_generation
-  private_ip_address_enabled = var.vpn_private_ip_address_enabled
-  tags                       = merge(var.default_tags, local.azurerm_virtual_network_gateway.tags)
-  vpn_type                   = var.vpn_type
+  location                              = var.location
+  name                                  = var.name
+  resource_group_name                   = local.virtual_network_resource_group_name
+  sku                                   = var.sku
+  type                                  = var.type
+  active_active                         = var.vpn_active_active_enabled
+  bgp_route_translation_for_nat_enabled = var.vpn_bgp_route_translation_for_nat_enabled
+  default_local_network_gateway_id      = var.vpn_default_local_network_gateway_id
+  dns_forwarding_enabled                = var.vpn_dns_forwarding_enabled
+  edge_zone                             = var.edge_zone
+  enable_bgp                            = var.vpn_bgp_enabled
+  generation                            = var.vpn_generation
+  ip_sec_replay_protection_enabled      = var.vpn_ip_sec_replay_protection_enabled
+  private_ip_address_enabled            = var.vpn_private_ip_address_enabled
+  remote_vnet_traffic_enabled           = var.express_route_remote_vnet_traffic_enabled
+  tags                                  = var.tags
+  virtual_wan_traffic_enabled           = var.express_route_virtual_wan_traffic_enabled
+  vpn_type                              = var.vpn_type
 
   dynamic "ip_configuration" {
     for_each = local.azurerm_virtual_network_gateway.ip_configuration
@@ -92,6 +98,32 @@ resource "azurerm_virtual_network_gateway" "vgw" {
       }
     }
   }
+  dynamic "custom_route" {
+    for_each = var.vpn_custom_route == null ? [] : ["CustomRoute"]
+
+    content {
+      address_prefixes = var.vpn_custom_route.address_prefixes
+    }
+  }
+  dynamic "policy_group" {
+    for_each = var.vpn_policy_groups
+
+    content {
+      name       = policy_group.value.name
+      is_default = policy_group.value.is_default
+      priority   = policy_group.value.priority
+
+      dynamic "policy_member" {
+        for_each = policy_group.value.policy_members
+
+        content {
+          name  = policy_member.value.name
+          type  = policy_member.value.type
+          value = policy_member.value.value
+        }
+      }
+    }
+  }
   dynamic "vpn_client_configuration" {
     for_each = var.vpn_point_to_site == null ? [] : ["VpnClientConfiguration"]
 
@@ -105,6 +137,29 @@ resource "azurerm_virtual_network_gateway" "vgw" {
       vpn_auth_types        = var.vpn_point_to_site.vpn_auth_types
       vpn_client_protocols  = var.vpn_point_to_site.vpn_client_protocols
 
+      dynamic "ipsec_policy" {
+        for_each = var.vpn_point_to_site.ipsec_policy == null ? [] : ["IPSecPolicy"]
+
+        content {
+          dh_group                  = var.vpn_point_to_site.ipsec_policy.dh_group
+          ike_encryption            = var.vpn_point_to_site.ipsec_policy.ike_encryption
+          ike_integrity             = var.vpn_point_to_site.ipsec_policy.ike_integrity
+          ipsec_encryption          = var.vpn_point_to_site.ipsec_policy.ipsec_encryption
+          ipsec_integrity           = var.vpn_point_to_site.ipsec_policy.ipsec_integrity
+          pfs_group                 = var.vpn_point_to_site.ipsec_policy.pfs_group
+          sa_data_size_in_kilobytes = var.vpn_point_to_site.ipsec_policy.sa_data_size_in_kilobytes
+          sa_lifetime_in_seconds    = var.vpn_point_to_site.ipsec_policy.sa_lifetime_in_seconds
+        }
+      }
+      dynamic "radius_server" {
+        for_each = var.vpn_point_to_site.radius_server
+
+        content {
+          address = radius_server.value.address
+          score   = radius_server.value.store
+          secret  = radius_server.value.secret
+        }
+      }
       dynamic "revoked_certificate" {
         for_each = var.vpn_point_to_site.revoked_certificate
 
@@ -141,7 +196,7 @@ resource "azurerm_local_network_gateway" "vgw" {
   address_space       = each.value.address_space
   gateway_address     = each.value.gateway_address
   gateway_fqdn        = each.value.gateway_fqdn
-  tags                = merge(var.default_tags, each.value.tags)
+  tags                = merge(var.tags, each.value.tags)
 
   dynamic "bgp_settings" {
     for_each = each.value.bgp_settings == null ? [] : ["BgpSettings"]
@@ -174,9 +229,10 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
   local_azure_ip_address_enabled     = try(each.value.local_azure_ip_address_enabled, null)
   local_network_gateway_id           = try(azurerm_local_network_gateway.vgw[trimprefix(each.key, "lgw-")].id, each.value.local_network_gateway_id, null)
   peer_virtual_network_gateway_id    = try(each.value.peer_virtual_network_gateway_id, null)
+  private_link_fast_path_enabled     = try(each.value.private_link_fast_path_enabled, null)
   routing_weight                     = each.value.routing_weight
   shared_key                         = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].shared_key, null)
-  tags                               = merge(var.default_tags, each.value.tags)
+  tags                               = merge(var.tags, each.value.tags)
   use_policy_based_traffic_selectors = try(each.value.use_policy_based_traffic_selectors, null)
 
   dynamic "custom_bgp_addresses" {
