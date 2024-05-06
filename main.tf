@@ -152,7 +152,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
         }
       }
       dynamic "radius_server" {
-        for_each = var.vpn_point_to_site.radius_server
+        for_each = var.vpn_point_to_site.radius_servers
 
         content {
           address = radius_server.value.address
@@ -161,7 +161,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
         }
       }
       dynamic "revoked_certificate" {
-        for_each = var.vpn_point_to_site.revoked_certificate
+        for_each = var.vpn_point_to_site.revoked_certificates
 
         content {
           name       = revoked_certificate.value.name
@@ -169,7 +169,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
         }
       }
       dynamic "root_certificate" {
-        for_each = var.vpn_point_to_site.root_certificate
+        for_each = var.vpn_point_to_site.root_certificates
 
         content {
           name             = root_certificate.value.name
