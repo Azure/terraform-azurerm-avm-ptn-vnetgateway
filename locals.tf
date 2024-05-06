@@ -25,7 +25,6 @@ locals {
     if ip_configuration.public_ip.id == null
   }
   azurerm_virtual_network_gateway = {
-    tags = var.tags == null ? {} : var.tags
     bgp_settings = {
       asn         = try(var.vpn_bgp_settings.asn, null)
       peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
@@ -41,7 +40,7 @@ locals {
       for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
         name                          = ip_configuration.name
         public_ip_address_id          = try(azurerm_public_ip.vgw[ip_configuration_key].id, ip_configuration.public_ip.id)
-        subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : local.subnet_id
+        subnet_id                     = try(azurerm_subnet.vgw[0].id, local.subnet_id)
         private_ip_address_allocation = ip_configuration.private_ip_address_allocation
       }
     }
@@ -55,8 +54,6 @@ locals {
     local.express_route_circuit_virtual_network_gateway_connections
   )
 }
-
-
 locals {
   subnet_id = join("/", [
     var.virtual_network_id,
@@ -141,7 +138,6 @@ locals {
     if local_network_gateway.connection != null
   }
 }
-
 locals {
   express_route_circuit_peerings = {
     for express_route_circuit_key, express_route_circuit in var.express_route_circuits : express_route_circuit_key => merge(
