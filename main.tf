@@ -176,6 +176,15 @@ resource "azurerm_virtual_network_gateway" "vgw" {
           public_cert_data = root_certificate.value.public_cert_data
         }
       }
+      dynamic "virtual_network_gateway_client_connection" {
+        for_each = var.vpn_point_to_site.virtual_network_gateway_client_connections
+
+        content {
+          address_prefixes   = virtual_network_gateway_client_connection.value.address_prefixes
+          name               = virtual_network_gateway_client_connection.value.name
+          policy_group_names = virtual_network_gateway_client_connection.value.policy_group_names
+        }
+      }
     }
   }
 
