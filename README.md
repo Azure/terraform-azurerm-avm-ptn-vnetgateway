@@ -54,17 +54,21 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.100, < 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0)
+- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3.2)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.100, < 4.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0.0)
 
-- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0)
+- <a name="provider_modtm"></a> [modtm](#provider\_modtm) (~> 0.3.2)
+
+- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5.0)
 
 ## Resources
 
@@ -73,13 +77,15 @@ The following resources are used by this module:
 - [azurerm_express_route_circuit_peering.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/express_route_circuit_peering) (resource)
 - [azurerm_local_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/local_network_gateway) (resource)
 - [azurerm_public_ip.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
-- [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
 - [azurerm_route_table.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) (resource)
 - [azurerm_subnet.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_subnet_route_table_association.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association) (resource)
 - [azurerm_virtual_network_gateway.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway) (resource)
 - [azurerm_virtual_network_gateway_connection.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway_connection) (resource)
-- [random_id.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
+- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/resources/telemetry) (resource)
+- [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [modtm_module_source.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -242,6 +248,7 @@ map(object({
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
+      creation_enabled        = optional(bool, true)
       id                      = optional(string, null)
       name                    = optional(string, null)
       allocation_method       = optional(string, "Static")
@@ -444,7 +451,7 @@ Description: Enable active-active mode for the Virtual Network Gateway.
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_vpn_bgp_enabled"></a> [vpn\_bgp\_enabled](#input\_vpn\_bgp\_enabled)
 
@@ -652,6 +659,10 @@ Description: A curated output of the Local Network Gateways created by this modu
 ### <a name="output_public_ip_addresses"></a> [public\_ip\_addresses](#output\_public\_ip\_addresses)
 
 Description: A curated output of the Public IP Addresses created by this module.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The ID of the Virtual Network Gateway.
 
 ### <a name="output_route_table"></a> [route\_table](#output\_route\_table)
 

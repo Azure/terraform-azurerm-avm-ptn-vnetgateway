@@ -3,12 +3,13 @@ provider "azurerm" {
 }
 
 variables {
-  location              = "uksouth"
-  name                  = "vgw-test"
-  subnet_address_prefix = "10.0.0.0/24"
-  sku                   = "VpnGw1AZ"
-  type                  = "Vpn"
-  enable_telemetry      = false
+  location                  = "uksouth"
+  name                      = "vgw-test"
+  subnet_address_prefix     = "10.0.0.0/24"
+  sku                       = "VpnGw1AZ"
+  type                      = "Vpn"
+  enable_telemetry          = false
+  vpn_active_active_enabled = false
   virtual_network_id = join("/", [
     "",
     "subscriptions",
@@ -92,9 +93,9 @@ run "vpn_local_network_gateway" {
           bgp_peering_address = "0.0.0.0"
         }
         connection = {
-          name = "conn-test"
-          type = "IPsec"
-
+          name       = "conn-test"
+          type       = "IPsec"
+          shared_key = "ABCDEF"
         }
       }
     }

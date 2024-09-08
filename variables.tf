@@ -1,6 +1,7 @@
 variable "location" {
   type        = string
   description = "The Azure region where the resources will be deployed."
+  nullable    = false
 }
 
 variable "name" {
@@ -39,6 +40,7 @@ variable "express_route_circuits" {
   type = map(object({
     id = string
     connection = optional(object({
+      resource_group_name            = optional(string, null)
       authorization_key              = optional(string, null)
       express_route_gateway_bypass   = optional(bool, null)
       private_link_fast_path_enabled = optional(bool, false)
@@ -72,6 +74,7 @@ Map of Virtual Network Gateway Connections and Peering Configurations to create 
 - `id` - (Required) The ID of the ExpressRoute circuit.
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Virtual Network Gateway Connection. Defaults to the resource group of the Virtual Network.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
   - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding.
   - `private_link_fast_path_enabled` - (Optional) Bypass the Express Route gateway when accessing private-links. When enabled express_route_gateway_bypass must be set to true. Defaults to false.
@@ -138,8 +141,10 @@ variable "ip_configurations" {
     apipa_addresses               = optional(list(string), null)
     private_ip_address_allocation = optional(string, "Dynamic")
     public_ip = optional(object({
+      creation_enabled        = optional(bool, true)
       id                      = optional(string, null)
       name                    = optional(string, null)
+      resource_group_name     = optional(string, null)
       allocation_method       = optional(string, "Static")
       sku                     = optional(string, "Standard")
       tags                    = optional(map(string), {})
@@ -166,6 +171,7 @@ Map of IP Configurations to create for the Virtual Network Gateway.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
   - `id` - (Optional) The resource id of an existing public ip address to use for the IP Configuration.
   - `name` - (Optional) The name of the Public IP Address.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Public IP Address.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
@@ -190,16 +196,21 @@ DESCRIPTION
     ])
     error_message = "public_ip.id must be a valid resource id."
   }
+  validation {
+    condition     = alltrue([for _, v in var.ip_configurations : (v.public_ip.creation_enabled == false ? v.public_ip.id != null : true) || (v.public_ip.id != null ? v.public_ip.creation_enabled == false : true) if v.public_ip != null])
+    error_message = "id must be specified when creation_enabled is false."
+  }
 }
 
 variable "local_network_gateways" {
   type = map(object({
-    id              = optional(string, null)
-    name            = optional(string, null)
-    address_space   = optional(list(string), null)
-    gateway_fqdn    = optional(string, null)
-    gateway_address = optional(string, null)
-    tags            = optional(map(string), {})
+    id                  = optional(string, null)
+    name                = optional(string, null)
+    resource_group_name = optional(string, null)
+    address_space       = optional(list(string), null)
+    gateway_fqdn        = optional(string, null)
+    gateway_address     = optional(string, null)
+    tags                = optional(map(string), {})
     bgp_settings = optional(object({
       asn                 = number
       bgp_peering_address = string
@@ -207,6 +218,7 @@ variable "local_network_gateways" {
     }), null)
     connection = optional(object({
       name                               = optional(string, null)
+      resource_group_name                = optional(string, null)
       type                               = string
       connection_mode                    = optional(string, null)
       connection_protocol                = optional(string, null)
@@ -259,6 +271,7 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection for the Local Network Gateway.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Virtual Network Gateway Connection. Defaults to the resource group of the Virtual Network.
   - `type` - (Required) The type of Virtual Network Gateway Connection. Possible values are IPsec or Vnet2Vnet.
   - `connection_mode` - (Optional) The connection mode.
   - `connection_protocol` - (Optional) The connection protocol. Possible values are IKEv2 or IKEv1.
@@ -323,6 +336,12 @@ variable "route_table_name" {
   description = "Name of the Route Table associated with Virtual Network Gateway Subnet."
 }
 
+variable "route_table_resource_group_name" {
+  type        = string
+  default     = null
+  description = "The name of the resource group in which to create the Route Table. If left blank, the resource group of the virtual network will be used."
+}
+
 variable "route_table_tags" {
   type        = map(string)
   default     = {}
@@ -376,7 +395,7 @@ variable "type" {
 
 variable "vpn_active_active_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enable active-active mode for the Virtual Network Gateway."
   nullable    = false
 }
@@ -397,7 +416,7 @@ variable "vpn_bgp_route_translation_for_nat_enabled" {
 
 variable "vpn_bgp_settings" {
   type = object({
-    asn         = optional(number, null)
+    asn         = optional(number, 65515)
     peer_weight = optional(number, null)
   })
   default     = null

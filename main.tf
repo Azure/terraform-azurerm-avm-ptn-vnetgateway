@@ -12,8 +12,8 @@ resource "azurerm_route_table" "vgw" {
 
   location                      = var.location
   name                          = coalesce(var.route_table_name, "rt-${var.name}")
-  resource_group_name           = local.virtual_network_resource_group_name
-  disable_bgp_route_propagation = !var.route_table_bgp_route_propagation_enabled
+  resource_group_name           = coalesce(var.route_table_resource_group_name, local.virtual_network_resource_group_name)
+  bgp_route_propagation_enabled = !var.route_table_bgp_route_propagation_enabled
   tags                          = merge(var.tags, var.route_table_tags)
 }
 
@@ -35,7 +35,7 @@ resource "azurerm_public_ip" "vgw" {
   allocation_method       = each.value.allocation_method
   location                = var.location
   name                    = each.value.name
-  resource_group_name     = local.virtual_network_resource_group_name
+  resource_group_name     = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
@@ -57,19 +57,19 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   resource_group_name                   = local.virtual_network_resource_group_name
   sku                                   = var.sku
   type                                  = var.type
-  active_active                         = var.vpn_active_active_enabled
-  bgp_route_translation_for_nat_enabled = var.vpn_bgp_route_translation_for_nat_enabled
-  default_local_network_gateway_id      = var.vpn_default_local_network_gateway_id
-  dns_forwarding_enabled                = var.vpn_dns_forwarding_enabled
+  active_active                         = var.type == "Vpn" ? var.vpn_active_active_enabled : null
+  bgp_route_translation_for_nat_enabled = var.type == "Vpn" ? var.vpn_bgp_route_translation_for_nat_enabled : null
+  default_local_network_gateway_id      = var.type == "Vpn" ? var.vpn_default_local_network_gateway_id : null
+  dns_forwarding_enabled                = var.type == "Vpn" ? var.vpn_dns_forwarding_enabled : null
   edge_zone                             = var.edge_zone
-  enable_bgp                            = var.vpn_bgp_enabled
-  generation                            = var.vpn_generation
-  ip_sec_replay_protection_enabled      = var.vpn_ip_sec_replay_protection_enabled
-  private_ip_address_enabled            = var.vpn_private_ip_address_enabled
+  enable_bgp                            = var.type == "Vpn" ? var.vpn_bgp_enabled : null
+  generation                            = var.type == "Vpn" ? var.vpn_generation : null
+  ip_sec_replay_protection_enabled      = var.type == "Vpn" ? var.vpn_ip_sec_replay_protection_enabled : null
+  private_ip_address_enabled            = var.type == "Vpn" ? var.vpn_private_ip_address_enabled : null
   remote_vnet_traffic_enabled           = var.express_route_remote_vnet_traffic_enabled
   tags                                  = var.tags
   virtual_wan_traffic_enabled           = var.express_route_virtual_wan_traffic_enabled
-  vpn_type                              = var.vpn_type
+  vpn_type                              = var.type == "Vpn" ? var.vpn_type : null
 
   dynamic "ip_configuration" {
     for_each = local.azurerm_virtual_network_gateway.ip_configuration
@@ -82,7 +82,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     }
   }
   dynamic "bgp_settings" {
-    for_each = var.vpn_bgp_enabled == true ? ["BgpSettings"] : []
+    for_each = var.vpn_bgp_enabled == true && var.type == "Vpn" ? ["BgpSettings"] : []
 
     content {
       asn         = local.azurerm_virtual_network_gateway.bgp_settings.asn
@@ -99,7 +99,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     }
   }
   dynamic "custom_route" {
-    for_each = var.vpn_custom_route == null ? [] : ["CustomRoute"]
+    for_each = var.vpn_custom_route == null || var.type != "Vpn" ? [] : ["CustomRoute"]
 
     content {
       address_prefixes = var.vpn_custom_route.address_prefixes
@@ -125,7 +125,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
     }
   }
   dynamic "vpn_client_configuration" {
-    for_each = var.vpn_point_to_site == null ? [] : ["VpnClientConfiguration"]
+    for_each = var.vpn_point_to_site == null || var.type != "Vpn" ? [] : ["VpnClientConfiguration"]
 
     content {
       address_space         = var.vpn_point_to_site.address_space
@@ -190,7 +190,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
 
   lifecycle {
     precondition {
-      condition     = var.vpn_active_active_enabled == true ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
+      condition     = var.vpn_active_active_enabled == true && var.type == "Vpn" ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
       error_message = "An active-active gateway requires at least two IP configurations."
     }
   }
@@ -201,7 +201,7 @@ resource "azurerm_local_network_gateway" "vgw" {
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
-  resource_group_name = local.virtual_network_resource_group_name
+  resource_group_name = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
   address_space       = each.value.address_space
   gateway_address     = each.value.gateway_address
   gateway_fqdn        = each.value.gateway_fqdn
@@ -223,7 +223,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
 
   location                           = var.location
   name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
-  resource_group_name                = local.virtual_network_resource_group_name
+  resource_group_name                = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
   type                               = each.value.type
   virtual_network_gateway_id         = azurerm_virtual_network_gateway.vgw.id
   authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
