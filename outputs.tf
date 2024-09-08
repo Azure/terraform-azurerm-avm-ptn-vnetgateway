@@ -19,6 +19,11 @@ output "public_ip_addresses" {
   }
 }
 
+output "resource_id" {
+  description = "The ID of the Virtual Network Gateway."
+  value       = azurerm_virtual_network_gateway.vgw.id
+}
+
 output "route_table" {
   description = "A curated output of the Route Table created by this module."
   value = {

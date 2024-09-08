@@ -53,6 +53,7 @@ run "expressroute" {
           authorization_key            = "ABDNDBEHF"
           name                         = "conn-test"
           routing_weight               = 10
+          shared_key                   = "ABCDEF"
         }
         peering = {
           peering_type        = "AzurePrivatePeering"

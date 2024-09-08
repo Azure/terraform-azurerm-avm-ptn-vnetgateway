@@ -7,6 +7,7 @@ locals {
   azurerm_public_ip = {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
       name                    = ip_configuration.public_ip.name
+      resource_group_name     = coalesce(ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
       allocation_method       = ip_configuration.public_ip.allocation_method
       sku                     = ip_configuration.public_ip.sku
       tags                    = ip_configuration.public_ip.tags
@@ -22,11 +23,11 @@ locals {
       reverse_fqdn            = ip_configuration.public_ip.reverse_fqdn
       sku_tier                = ip_configuration.public_ip.sku_tier
     }
-    if ip_configuration.public_ip.id == null
+    if ip_configuration.public_ip.creation_enabled == true
   }
   azurerm_virtual_network_gateway = {
     bgp_settings = {
-      asn         = try(var.vpn_bgp_settings.asn, null)
+      asn         = try(var.vpn_bgp_settings.asn, 65515)
       peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
       peering_addresses = {
         for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
@@ -69,6 +70,8 @@ locals {
     apipa_addresses               = null
     private_ip_address_allocation = "Dynamic"
     public_ip = {
+      creation_enabled        = true
+      resource_group_name     = null
       id                      = null
       name                    = null
       allocation_method       = "Static"
@@ -90,7 +93,7 @@ locals {
   ip_configurations = {
     for ip_configuration_key, ip_configuration in(
       length(var.ip_configurations) == 0 ? (
-        var.vpn_active_active_enabled ?
+        var.vpn_active_active_enabled && var.type == "Vpn" ?
         {
           "001" = local.default_ip_configuration
           "002" = local.default_ip_configuration

@@ -2,8 +2,6 @@ locals {
   shared_key = sensitive("shared_key")
 }
 
-data "azurerm_client_config" "core" {}
-
 resource "random_id" "id" {
   byte_length = 4
 }
@@ -13,6 +11,11 @@ resource "azurerm_resource_group" "rg" {
   name     = "rg-vnetgateway-${random_id.id.hex}"
 }
 
+resource "azurerm_resource_group" "rg_two" {
+  location = "uksouth"
+  name     = "rg-vnetgateway-${random_id.id.hex}-02"
+}
+
 resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
@@ -20,8 +23,8 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
 
   subnet {
-    address_prefix = "10.0.0.0/24"
-    name           = "GatewaySubnet"
+    address_prefixes = ["10.0.0.0/24"]
+    name             = "GatewaySubnet"
   }
 }
 
@@ -55,15 +58,17 @@ module "vgw" {
       name            = "vnetGatewayConfig02"
       apipa_addresses = ["169.254.21.2"]
       public_ip = {
-        id = "/subscriptions/${data.azurerm_client_config.core.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Network/publicIPAddresses/${azurerm_public_ip.public_ip.name}"
+        creation_enabled = false
+        id               = azurerm_public_ip.public_ip.id
       }
     }
   }
   local_network_gateways = {
     gateway-uks = {
-      name            = "lgw-gateway"
-      gateway_address = "1.1.1.1"
-      address_space   = ["196.0.0.0/16"]
+      name                = "lgw-gateway"
+      resource_group_name = azurerm_resource_group.rg_two.name
+      gateway_address     = "1.1.1.1"
+      address_space       = ["196.0.0.0/16"]
       connection = {
         type       = "IPsec"
         shared_key = local.shared_key
