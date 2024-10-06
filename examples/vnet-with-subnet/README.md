@@ -17,6 +17,11 @@ resource "azurerm_resource_group" "rg" {
   name     = "rg-vnetgateway-${random_id.id.hex}"
 }
 
+resource "azurerm_resource_group" "rg_two" {
+  location = "uksouth"
+  name     = "rg-vnetgateway-${random_id.id.hex}-02"
+}
+
 resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
@@ -66,9 +71,10 @@ module "vgw" {
   }
   local_network_gateways = {
     gateway-uks = {
-      name            = "lgw-gateway"
-      gateway_address = "1.1.1.1"
-      address_space   = ["196.0.0.0/16"]
+      name                = "lgw-gateway"
+      resource_group_name = azurerm_resource_group.rg_two.name
+      gateway_address     = "1.1.1.1"
+      address_space       = ["196.0.0.0/16"]
       connection = {
         type       = "IPsec"
         shared_key = local.shared_key
@@ -90,20 +96,13 @@ The following requirements are needed by this module:
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5.0)
 
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0.0)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5.0)
-
 ## Resources
 
 The following resources are used by this module:
 
 - [azurerm_public_ip.public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_resource_group.rg_two](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_id.id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
 
