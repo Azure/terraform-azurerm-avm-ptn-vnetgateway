@@ -60,16 +60,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5.0)
 
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0.0)
-
-- <a name="provider_modtm"></a> [modtm](#provider\_modtm) (~> 0.3.2)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5.0)
-
 ## Resources
 
 The following resources are used by this module:
@@ -139,6 +129,7 @@ Description: Map of Virtual Network Gateway Connections and Peering Configuratio
 - `id` - (Required) The ID of the ExpressRoute circuit.
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection between the ExpressRoute Circuit and the Virtual Network Gateway.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Virtual Network Gateway Connection. Defaults to the resource group of the Virtual Network.
   - `authorization_key` - (Optional) The authorization key for the ExpressRoute Circuit.
   - `express_route_gateway_bypass` - (Optional) Whether to bypass the ExpressRoute Gateway for data forwarding.
   - `private_link_fast_path_enabled` - (Optional) Bypass the Express Route gateway when accessing private-links. When enabled express\_route\_gateway\_bypass must be set to true. Defaults to false.
@@ -169,6 +160,7 @@ Type:
 map(object({
     id = string
     connection = optional(object({
+      resource_group_name            = optional(string, null)
       authorization_key              = optional(string, null)
       express_route_gateway_bypass   = optional(bool, null)
       private_link_fast_path_enabled = optional(bool, false)
@@ -225,6 +217,7 @@ Description: Map of IP Configurations to create for the Virtual Network Gateway.
 - `public_ip` - (Optional) a `public_ip` block as defined below. Used to configure the Public IP Address for the IP Configuration.
   - `id` - (Optional) The resource id of an existing public ip address to use for the IP Configuration.
   - `name` - (Optional) The name of the Public IP Address.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Public IP Address.
   - `allocation_method` - (Optional) The allocation method of the Public IP Address. Possible values are Static or Dynamic. Defaults to Dynamic.
   - `sku` - (Optional) The SKU of the Public IP Address. Possible values are Basic or Standard. Defaults to Standard.
   - `tags` - (Optional) A mapping of tags to assign to the resource.
@@ -251,6 +244,7 @@ map(object({
       creation_enabled        = optional(bool, true)
       id                      = optional(string, null)
       name                    = optional(string, null)
+      resource_group_name     = optional(string, null)
       allocation_method       = optional(string, "Static")
       sku                     = optional(string, "Standard")
       tags                    = optional(map(string), {})
@@ -288,6 +282,7 @@ Description: Map of Local Network Gateways and Virtual Network Gateway Connectio
 
 - `connection` - (Optional) a `connection` block as defined below. Used to configure the Virtual Network Gateway Connection for the Local Network Gateway.
   - `name` - (Optional) The name of the Virtual Network Gateway Connection.
+  - `resource_group_name` - (Optional) The name of the resource group in which to create the Virtual Network Gateway Connection. Defaults to the resource group of the Virtual Network.
   - `type` - (Required) The type of Virtual Network Gateway Connection. Possible values are IPsec or Vnet2Vnet.
   - `connection_mode` - (Optional) The connection mode.
   - `connection_protocol` - (Optional) The connection protocol. Possible values are IKEv2 or IKEv1.
@@ -321,12 +316,13 @@ Type:
 
 ```hcl
 map(object({
-    id              = optional(string, null)
-    name            = optional(string, null)
-    address_space   = optional(list(string), null)
-    gateway_fqdn    = optional(string, null)
-    gateway_address = optional(string, null)
-    tags            = optional(map(string), {})
+    id                  = optional(string, null)
+    name                = optional(string, null)
+    resource_group_name = optional(string, null)
+    address_space       = optional(list(string), null)
+    gateway_fqdn        = optional(string, null)
+    gateway_address     = optional(string, null)
+    tags                = optional(map(string), {})
     bgp_settings = optional(object({
       asn                 = number
       bgp_peering_address = string
@@ -334,6 +330,7 @@ map(object({
     }), null)
     connection = optional(object({
       name                               = optional(string, null)
+      resource_group_name                = optional(string, null)
       type                               = string
       connection_mode                    = optional(string, null)
       connection_protocol                = optional(string, null)
@@ -392,6 +389,14 @@ Default: `false`
 ### <a name="input_route_table_name"></a> [route\_table\_name](#input\_route\_table\_name)
 
 Description: Name of the Route Table associated with Virtual Network Gateway Subnet.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_route_table_resource_group_name"></a> [route\_table\_resource\_group\_name](#input\_route\_table\_resource\_group\_name)
+
+Description: The name of the resource group in which to create the Route Table. If left blank, the resource group of the virtual network will be used.
 
 Type: `string`
 
@@ -477,7 +482,7 @@ Type:
 
 ```hcl
 object({
-    asn         = optional(number, null)
+    asn         = optional(number, 65515)
     peer_weight = optional(number, null)
   })
 ```
