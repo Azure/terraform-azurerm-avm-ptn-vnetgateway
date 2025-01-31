@@ -13,7 +13,7 @@ resource "azurerm_route_table" "vgw" {
   location                      = var.location
   name                          = coalesce(var.route_table_name, "rt-${var.name}")
   resource_group_name           = coalesce(var.route_table_resource_group_name, local.virtual_network_resource_group_name)
-  bgp_route_propagation_enabled = !var.route_table_bgp_route_propagation_enabled
+  bgp_route_propagation_enabled = var.route_table_bgp_route_propagation_enabled
   tags                          = merge(var.tags, var.route_table_tags)
 }
 
