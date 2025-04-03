@@ -69,7 +69,7 @@ resource "azurerm_virtual_network_gateway" "vgw" {
   remote_vnet_traffic_enabled           = var.express_route_remote_vnet_traffic_enabled
   tags                                  = var.tags
   virtual_wan_traffic_enabled           = var.express_route_virtual_wan_traffic_enabled
-  vpn_type                              = var.type == "Vpn" ? var.vpn_type : null
+  vpn_type                              = var.vpn_type
 
   dynamic "ip_configuration" {
     for_each = local.azurerm_virtual_network_gateway.ip_configuration
