@@ -17,15 +17,17 @@ resource "azurerm_resource_group" "rg_two" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   name                = "vnet-uksouth-prod"
   resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["10.0.0.0/16"]
+}
 
-  subnet {
-    address_prefixes = ["10.0.0.0/24"]
-    name             = "GatewaySubnet"
-  }
+resource "azurerm_subnet" "gateway_subnet" {
+  address_prefixes     = ["10.0.0.0/24"]
+  name                 = "GatewaySubnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
 }
 
 resource "azurerm_public_ip" "public_ip" {
@@ -40,15 +42,8 @@ resource "azurerm_public_ip" "public_ip" {
 module "vgw" {
   source = "../.."
 
-  location                  = "uksouth"
-  name                      = "vgw-uksouth-prod"
-  subnet_address_prefix     = "10.0.1.0/24"
-  sku                       = "VpnGw1AZ"
-  type                      = "Vpn"
-  virtual_network_id        = azurerm_virtual_network.vnet.id
-  subnet_creation_enabled   = false
-  vpn_active_active_enabled = true
-  vpn_bgp_enabled           = true
+  location = "uksouth"
+  name     = "vgw-uksouth-prod"
   ip_configurations = {
     "ip_config_01" = {
       name            = "vnetGatewayConfig01"
@@ -75,5 +70,12 @@ module "vgw" {
       }
     }
   }
+  sku                               = "VpnGw1AZ"
+  subnet_address_prefix             = "10.0.1.0/24"
+  subnet_creation_enabled           = false
+  type                              = "Vpn"
+  virtual_network_gateway_subnet_id = azurerm_subnet.gateway_subnet.id
+  vpn_active_active_enabled         = true
+  vpn_bgp_enabled                   = true
 }
 

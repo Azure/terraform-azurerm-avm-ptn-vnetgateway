@@ -21,7 +21,7 @@ resource "azurerm_subnet_route_table_association" "vgw" {
   count = var.route_table_creation_enabled ? 1 : 0
 
   route_table_id = azurerm_route_table.vgw[0].id
-  subnet_id      = try(azurerm_subnet.vgw[0].id, local.subnet_id)
+  subnet_id      = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : var.virtual_network_gateway_subnet_id
 
   depends_on = [
     azurerm_subnet.vgw,

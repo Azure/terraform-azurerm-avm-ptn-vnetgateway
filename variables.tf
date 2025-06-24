@@ -9,16 +9,6 @@ variable "name" {
   description = "The name of the Virtual Network Gateway."
 }
 
-variable "virtual_network_id" {
-  type        = string
-  description = "The resource id of the Virtual Network to which the Virtual Network Gateway will be attached."
-
-  validation {
-    condition     = can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/virtualNetworks/[^/]+$", var.virtual_network_id))
-    error_message = "virtual_network_id must be a valid resource id."
-  }
-}
-
 variable "edge_zone" {
   type        = string
   default     = null
@@ -390,6 +380,40 @@ variable "type" {
   validation {
     condition     = contains(["ExpressRoute", "Vpn"], var.type)
     error_message = "type possible values are ExpressRoute or Vpn."
+  }
+}
+
+variable "virtual_network_gateway_subnet_id" {
+  type        = string
+  default     = null
+  description = "The resource id of the Virtual Network Gateway Subnet. If not specified, the module will create a new subnet for the Virtual Network Gateway."
+
+  validation {
+    condition     = var.virtual_network_gateway_subnet_id == null || can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/virtualNetworks/[^/]+/subnets/[^/]+$", var.virtual_network_gateway_subnet_id))
+    error_message = "virtual_network_gateway_subnet_id must be a valid resource id."
+  }
+  validation {
+    condition     = var.virtual_network_gateway_subnet_id == null && var.virtual_network_id == null ? false : true
+    error_message = "one of virtual_network_gateway_subnet_id or virtual_network_id must be supplied."
+  }
+  validation {
+    condition     = var.subnet_creation_enabled ? var.virtual_network_gateway_subnet_id == null : var.virtual_network_gateway_subnet_id != null
+    error_message = "virtual_network_gateway_subnet_id must be supplied when subnet_creation_enabled is false and not when it is true."
+  }
+}
+
+variable "virtual_network_id" {
+  type        = string
+  default     = null
+  description = "The resource id of the Virtual Network to which the Virtual Network Gateway will be attached."
+
+  validation {
+    condition     = var.virtual_network_id == null || can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Network/virtualNetworks/[^/]+$", var.virtual_network_id))
+    error_message = "virtual_network_id must be a valid resource id."
+  }
+  validation {
+    condition     = var.subnet_creation_enabled ? var.virtual_network_id != null : var.virtual_network_id == null
+    error_message = "virtual_network_id must be supplied when subnet_creation_enabled is true and not when it is false."
   }
 }
 

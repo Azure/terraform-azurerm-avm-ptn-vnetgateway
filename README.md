@@ -94,12 +94,6 @@ Description: The name of the Virtual Network Gateway.
 
 Type: `string`
 
-### <a name="input_virtual_network_id"></a> [virtual\_network\_id](#input\_virtual\_network\_id)
-
-Description: The resource id of the Virtual Network to which the Virtual Network Gateway will be attached.
-
-Type: `string`
-
 ## Optional Inputs
 
 The following input variables are optional (have default values):
@@ -449,6 +443,22 @@ Description: The type of the Virtual Network Gateway, ExpressRoute or Vpn.
 Type: `string`
 
 Default: `"ExpressRoute"`
+
+### <a name="input_virtual_network_gateway_subnet_id"></a> [virtual\_network\_gateway\_subnet\_id](#input\_virtual\_network\_gateway\_subnet\_id)
+
+Description: The resource id of the Virtual Network Gateway Subnet. If not specified, the module will create a new subnet for the Virtual Network Gateway.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_virtual_network_id"></a> [virtual\_network\_id](#input\_virtual\_network\_id)
+
+Description: The resource id of the Virtual Network to which the Virtual Network Gateway will be attached.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_vpn_active_active_enabled"></a> [vpn\_active\_active\_enabled](#input\_vpn\_active\_active\_enabled)
 
