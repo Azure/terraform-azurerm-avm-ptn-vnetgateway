@@ -45,7 +45,7 @@ resource "azurerm_public_ip" "public_ip" {
   zones               = ["1", "2", "3"]
 }
 
-module "vgwvpn" {
+module "vgw_vpn" {
   source = "../.."
 
   location = "uksouth"
@@ -85,7 +85,7 @@ module "vgwvpn" {
   vpn_bgp_enabled                   = true
 }
 
-module "vgw_ex" {
+module "vgw_er" {
   source = "../.."
 
   location = "uksouth"
@@ -146,13 +146,13 @@ Description: The ID of the subnet for the virtual network gateway.
 
 The following Modules are called:
 
-### <a name="module_vgw_ex"></a> [vgw\_ex](#module\_vgw\_ex)
+### <a name="module_vgw_er"></a> [vgw\_er](#module\_vgw\_er)
 
 Source: ../..
 
 Version:
 
-### <a name="module_vgwvpn"></a> [vgwvpn](#module\_vgwvpn)
+### <a name="module_vgw_vpn"></a> [vgw\_vpn](#module\_vgw\_vpn)
 
 Source: ../..
 
