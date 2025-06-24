@@ -39,11 +39,11 @@ resource "azurerm_public_ip" "public_ip" {
   zones               = ["1", "2", "3"]
 }
 
-module "vgw" {
+module "vgwvpn" {
   source = "../.."
 
   location = "uksouth"
-  name     = "vgw-uksouth-prod"
+  name     = "vgw-vpn-uksouth-prod"
   ip_configurations = {
     "ip_config_01" = {
       name            = "vnetGatewayConfig01"
@@ -77,5 +77,21 @@ module "vgw" {
   virtual_network_gateway_subnet_id = azurerm_subnet.gateway_subnet.id
   vpn_active_active_enabled         = true
   vpn_bgp_enabled                   = true
+}
+
+module "vgwex" {
+  source = "../.."
+
+  location = "uksouth"
+  name     = "vgw-ex-uksouth-prod"
+  ip_configurations = {
+    ip_config_01 = {
+      name = "vnetGatewayConfig01"
+    }
+  }
+  sku                               = "ErGw1AZ"
+  subnet_creation_enabled           = false
+  type                              = "ExpressRoute"
+  virtual_network_gateway_subnet_id = azurerm_subnet.gateway_subnet.id
 }
 

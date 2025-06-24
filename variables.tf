@@ -306,6 +306,12 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   }
 }
 
+variable "resource_group_name" {
+  type        = string
+  default     = null
+  description = "The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used."
+}
+
 variable "route_table_bgp_route_propagation_enabled" {
   type        = bool
   default     = true

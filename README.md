@@ -364,6 +364,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_route_table_bgp_route_propagation_enabled"></a> [route\_table\_bgp\_route\_propagation\_enabled](#input\_route\_table\_bgp\_route\_propagation\_enabled)
 
 Description: Whether or not to enable BGP route propagation on the Route Table.

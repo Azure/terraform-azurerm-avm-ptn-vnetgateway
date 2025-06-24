@@ -7,7 +7,7 @@ locals {
   azurerm_public_ip = {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
       name                    = ip_configuration.public_ip.name
-      resource_group_name     = coalesce(ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
+      resource_group_name     = coalesce(var.resource_group_name, ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
       allocation_method       = ip_configuration.public_ip.allocation_method
       sku                     = ip_configuration.public_ip.sku
       tags                    = ip_configuration.public_ip.tags
@@ -56,8 +56,8 @@ locals {
   )
 }
 locals {
-  virtual_network_name                = var.virtual_network_id == null ? "" : basename(var.virtual_network_id)
-  virtual_network_resource_group_name = var.virtual_network_id == null ? "" : split("/", var.virtual_network_id)[4]
+  virtual_network_name                = var.subnet_creation_enabled ? basename(var.virtual_network_id) : ""
+  virtual_network_resource_group_name = var.subnet_creation_enabled ? split("/", var.virtual_network_id)[4] : split("/", var.virtual_network_gateway_subnet_id)[4]
 }
 locals {
   default_ip_configuration = {
