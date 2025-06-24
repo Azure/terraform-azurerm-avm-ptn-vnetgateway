@@ -85,7 +85,7 @@ module "vgwvpn" {
   vpn_bgp_enabled                   = true
 }
 
-module "vgwex" {
+module "vgw_ex" {
   source = "../.."
 
   location = "uksouth"
@@ -138,7 +138,7 @@ No optional inputs.
 
 The following outputs are exported:
 
-### <a name="output_test_subnet_id"></a> [test\_subnet\_id](#output\_test\_subnet\_id)
+### <a name="output_test"></a> [test](#output\_test)
 
 Description: The ID of the subnet for the virtual network gateway.
 
@@ -146,7 +146,7 @@ Description: The ID of the subnet for the virtual network gateway.
 
 The following Modules are called:
 
-### <a name="module_vgwex"></a> [vgwex](#module\_vgwex)
+### <a name="module_vgw_ex"></a> [vgw\_ex](#module\_vgw\_ex)
 
 Source: ../..
 

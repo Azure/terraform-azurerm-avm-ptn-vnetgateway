@@ -39,7 +39,7 @@ resource "azurerm_public_ip" "public_ip" {
   zones               = ["1", "2", "3"]
 }
 
-module "vgwvpn" {
+module "vgw_vpn" {
   source = "../.."
 
   location = "uksouth"
@@ -79,7 +79,7 @@ module "vgwvpn" {
   vpn_bgp_enabled                   = true
 }
 
-module "vgwex" {
+module "vgw_er" {
   source = "../.."
 
   location = "uksouth"
