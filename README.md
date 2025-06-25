@@ -56,7 +56,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3.2)
+- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
@@ -91,12 +91,6 @@ Type: `string`
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: The name of the Virtual Network Gateway.
-
-Type: `string`
-
-### <a name="input_virtual_network_id"></a> [virtual\_network\_id](#input\_virtual\_network\_id)
-
-Description: The resource id of the Virtual Network to which the Virtual Network Gateway will be attached.
 
 Type: `string`
 
@@ -370,6 +364,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_route_table_bgp_route_propagation_enabled"></a> [route\_table\_bgp\_route\_propagation\_enabled](#input\_route\_table\_bgp\_route\_propagation\_enabled)
 
 Description: Whether or not to enable BGP route propagation on the Route Table.
@@ -449,6 +451,22 @@ Description: The type of the Virtual Network Gateway, ExpressRoute or Vpn.
 Type: `string`
 
 Default: `"ExpressRoute"`
+
+### <a name="input_virtual_network_gateway_subnet_id"></a> [virtual\_network\_gateway\_subnet\_id](#input\_virtual\_network\_gateway\_subnet\_id)
+
+Description: The resource id of the Virtual Network Gateway Subnet. If not specified, the module will create a new subnet for the Virtual Network Gateway.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_virtual_network_id"></a> [virtual\_network\_id](#input\_virtual\_network\_id)
+
+Description: The resource id of the Virtual Network to which the Virtual Network Gateway will be attached.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_vpn_active_active_enabled"></a> [vpn\_active\_active\_enabled](#input\_vpn\_active\_active\_enabled)
 

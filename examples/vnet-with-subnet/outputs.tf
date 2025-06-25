@@ -1,4 +1,7 @@
-output "test_subnet_id" {
+output "test" {
   description = "The ID of the subnet for the virtual network gateway."
-  value       = module.vgw.subnet.id
+  value = {
+    vpn           = module.vgw_vpn
+    express_route = module.vgw_er
+  }
 }

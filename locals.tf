@@ -7,7 +7,7 @@ locals {
   azurerm_public_ip = {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
       name                    = ip_configuration.public_ip.name
-      resource_group_name     = coalesce(ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
+      resource_group_name     = coalesce(var.resource_group_name, ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
       allocation_method       = ip_configuration.public_ip.allocation_method
       sku                     = ip_configuration.public_ip.sku
       tags                    = ip_configuration.public_ip.tags
@@ -40,8 +40,8 @@ locals {
     ip_configuration = {
       for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
         name                          = ip_configuration.name
-        public_ip_address_id          = try(azurerm_public_ip.vgw[ip_configuration_key].id, ip_configuration.public_ip.id)
-        subnet_id                     = try(azurerm_subnet.vgw[0].id, local.subnet_id)
+        public_ip_address_id          = ip_configuration.public_ip.creation_enabled ? azurerm_public_ip.vgw[ip_configuration_key].id : ip_configuration.public_ip.id
+        subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : var.virtual_network_gateway_subnet_id
         private_ip_address_allocation = ip_configuration.private_ip_address_allocation
       }
     }
@@ -56,13 +56,8 @@ locals {
   )
 }
 locals {
-  subnet_id = join("/", [
-    var.virtual_network_id,
-    "subnets",
-    "GatewaySubnet"
-  ])
-  virtual_network_name                = basename(var.virtual_network_id)
-  virtual_network_resource_group_name = split("/", var.virtual_network_id)[4]
+  virtual_network_name                = var.subnet_creation_enabled ? basename(var.virtual_network_id) : ""
+  virtual_network_resource_group_name = var.subnet_creation_enabled ? split("/", var.virtual_network_id)[4] : split("/", var.virtual_network_gateway_subnet_id)[4]
 }
 locals {
   default_ip_configuration = {
