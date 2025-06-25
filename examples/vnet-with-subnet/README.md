@@ -12,19 +12,18 @@ resource "random_id" "id" {
   byte_length = 4
 }
 
-resource "azurerm_resource_group" "rg" {
-  location = "uksouth"
-  name     = "rg-vnetgateway-${random_id.id.hex}"
+locals {
+  location = "swedencentral"
 }
 
-resource "azurerm_resource_group" "rg_two" {
-  location = "uksouth"
-  name     = "rg-vnetgateway-${random_id.id.hex}-02"
+resource "azurerm_resource_group" "rg" {
+  location = local.location
+  name     = "rg-vnetgateway-${random_id.id.hex}"
 }
 
 resource "azurerm_virtual_network" "vnet" {
   location            = azurerm_resource_group.rg.location
-  name                = "vnet-uksouth-prod"
+  name                = "vnet-prod"
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["10.0.0.0/16"]
 }
@@ -39,7 +38,7 @@ resource "azurerm_subnet" "gateway_subnet" {
 resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
   location            = azurerm_resource_group.rg.location
-  name                = "pip-uksouth-prod"
+  name                = "pip-${random_id.id.hex}-02"
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "Standard"
   zones               = ["1", "2", "3"]
@@ -48,8 +47,8 @@ resource "azurerm_public_ip" "public_ip" {
 module "vgw_vpn" {
   source = "../.."
 
-  location = "uksouth"
-  name     = "vgw-vpn-uksouth-prod"
+  location = local.location
+  name     = "vgw-vpn-${random_id.id.hex}"
   ip_configurations = {
     "ip_config_01" = {
       name            = "vnetGatewayConfig01"
@@ -77,7 +76,6 @@ module "vgw_vpn" {
     }
   }
   sku                               = "VpnGw1AZ"
-  subnet_address_prefix             = "10.0.1.0/24"
   subnet_creation_enabled           = false
   type                              = "Vpn"
   virtual_network_gateway_subnet_id = azurerm_subnet.gateway_subnet.id
@@ -88,8 +86,8 @@ module "vgw_vpn" {
 module "vgw_er" {
   source = "../.."
 
-  location = "uksouth"
-  name     = "vgw-ex-uksouth-prod"
+  location = local.location
+  name     = "vgw-ex-${random_id.id.hex}"
   ip_configurations = {
     ip_config_01 = {
       name = "vnetGatewayConfig01"
@@ -100,7 +98,6 @@ module "vgw_er" {
   type                              = "ExpressRoute"
   virtual_network_gateway_subnet_id = azurerm_subnet.gateway_subnet.id
 }
-
 ```
 
 <!-- markdownlint-disable MD033 -->
@@ -120,7 +117,6 @@ The following resources are used by this module:
 
 - [azurerm_public_ip.public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_resource_group.rg_two](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.gateway_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_id.id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
