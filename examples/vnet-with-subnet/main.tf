@@ -12,7 +12,17 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   location = local.location
-  name     = "rg-vnetgateway-${random_id.id.hex}"
+  name     = "rg-vnetgateway-${random_id.id.hex}-01"
+}
+
+resource "azurerm_resource_group" "rg_two" {
+  location = local.location
+  name     = "rg-vnetgateway-${random_id.id.hex}-02"
+}
+
+resource "azurerm_resource_group" "rg_three" {
+  location = local.location
+  name     = "rg-vnetgateway-${random_id.id.hex}-03"
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -87,6 +97,7 @@ module "vgw_er" {
       name = "vnetGatewayConfig01"
     }
   }
+  resource_group_name               = azurerm_resource_group.rg_three.name
   sku                               = "ErGw1AZ"
   subnet_creation_enabled           = false
   type                              = "ExpressRoute"

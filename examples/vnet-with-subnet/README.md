@@ -18,7 +18,17 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   location = local.location
-  name     = "rg-vnetgateway-${random_id.id.hex}"
+  name     = "rg-vnetgateway-${random_id.id.hex}-01"
+}
+
+resource "azurerm_resource_group" "rg_two" {
+  location = local.location
+  name     = "rg-vnetgateway-${random_id.id.hex}-02"
+}
+
+resource "azurerm_resource_group" "rg_three" {
+  location = local.location
+  name     = "rg-vnetgateway-${random_id.id.hex}-03"
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -93,6 +103,7 @@ module "vgw_er" {
       name = "vnetGatewayConfig01"
     }
   }
+  resource_group_name               = azurerm_resource_group.rg_three.name
   sku                               = "ErGw1AZ"
   subnet_creation_enabled           = false
   type                              = "ExpressRoute"
@@ -117,6 +128,8 @@ The following resources are used by this module:
 
 - [azurerm_public_ip.public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_resource_group.rg_three](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_resource_group.rg_two](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.gateway_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_id.id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
