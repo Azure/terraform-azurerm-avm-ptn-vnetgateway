@@ -601,3 +601,10 @@ variable "vpn_type" {
     error_message = "vpn_type possible values are PolicyBased or RouteBased."
   }
 }
+
+variable "hosted_on_behalf_of_public_ip_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether or not to attach a Public IP Address for the Virtual Network Gateway. ExpressRoute Gateways are implementing HOBO (hosted on behalf of) public IPs. This is a breaking change and requires the public IP to be turned off and not assigned."
+  nullable    = false
+}

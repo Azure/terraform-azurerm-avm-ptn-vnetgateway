@@ -4,7 +4,7 @@ locals {
   azurerm_local_network_gateway = {
     for local_network_gateway_key, local_network_gateway in var.local_network_gateways : local_network_gateway_key => local_network_gateway if local_network_gateway.id == null
   }
-  azurerm_public_ip = {
+  azurerm_public_ip = var.hosted_on_behalf_of_public_ip_enabled ? {} : {
     for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
       name                    = ip_configuration.public_ip.name
       resource_group_name     = coalesce(var.resource_group_name, ip_configuration.public_ip.resource_group_name, local.virtual_network_resource_group_name)
@@ -40,7 +40,7 @@ locals {
     ip_configuration = {
       for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
         name                          = ip_configuration.name
-        public_ip_address_id          = ip_configuration.public_ip.creation_enabled ? azurerm_public_ip.vgw[ip_configuration_key].id : ip_configuration.public_ip.id
+        public_ip_address_id          = var.hosted_on_behalf_of_public_ip_enabled ? null : (ip_configuration.public_ip.creation_enabled ? azurerm_public_ip.vgw[ip_configuration_key].id : ip_configuration.public_ip.id)
         subnet_id                     = var.subnet_creation_enabled ? azurerm_subnet.vgw[0].id : var.virtual_network_gateway_subnet_id
         private_ip_address_allocation = ip_configuration.private_ip_address_allocation
       }
