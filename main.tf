@@ -62,9 +62,6 @@ resource "azapi_resource" "vgw" {
   response_export_values = ["*"]
   tags                   = var.tags
 
-  # Add data source for current subscription
-  depends_on = [data.azurerm_client_config.current]
-
   lifecycle {
     precondition {
       condition     = var.vpn_active_active_enabled == true && var.type == "Vpn" ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
