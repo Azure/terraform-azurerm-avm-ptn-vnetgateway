@@ -74,6 +74,12 @@ resource "azapi_resource" "vgw" {
 # Add data source for current Azure client configuration
 data "azurerm_client_config" "current" {}
 
+# Handle migration from azurerm_virtual_network_gateway to azapi_resource
+moved {
+  from = azurerm_virtual_network_gateway.vgw
+  to   = azapi_resource.vgw
+}
+
 resource "azurerm_local_network_gateway" "vgw" {
   for_each = local.azurerm_local_network_gateway
 
