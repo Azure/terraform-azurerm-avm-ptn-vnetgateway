@@ -9,6 +9,12 @@ variable "name" {
   description = "The name of the Virtual Network Gateway."
 }
 
+variable "edge_zone" {
+  type        = string
+  default     = null
+  description = "Specifies the Edge Zone within the Azure Region where this Virtual Network Gateway should exist. Changing this forces a new Virtual Network Gateway to be created."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true

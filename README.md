@@ -101,6 +101,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_edge_zone"></a> [edge\_zone](#input\_edge\_zone)
+
+Description: Specifies the Edge Zone within the Azure Region where this Virtual Network Gateway should exist. Changing this forces a new Virtual Network Gateway to be created.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  

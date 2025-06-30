@@ -54,6 +54,11 @@ locals {
     local.local_network_gateway_virtual_network_gateway_connections,
     local.express_route_circuit_virtual_network_gateway_connections
   )
+  # Transform edge_zone string to extendedLocation object for AzAPI
+  extended_location = var.edge_zone != null ? {
+    name = var.edge_zone
+    type = "EdgeZone"
+  } : null
   virtual_network_gateway_properties = {
     # Common properties for all gateway types
     gatewayType = var.type
