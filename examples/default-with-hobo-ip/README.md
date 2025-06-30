@@ -1,0 +1,195 @@
+<!-- BEGIN_TF_DOCS -->
+# ExpressRoute Virtual Network Gateway with Azure-Managed Public IP Example
+
+This example demonstrates deploying an **ExpressRoute Virtual Network Gateway** using the **Hosted On Behalf Of (HOBO)** public IP feature, where Azure automatically manages the public IP address.
+
+## 🚧 Regional Rollout Notice
+
+> **⚠️ IMPORTANT - Regional Availability**: The HOBO (Hosted On Behalf Of) public IP feature for ExpressRoute Virtual Network Gateways is currently being **rolled out to Azure regions worldwide**. Not all regions have this feature enabled yet.
+>
+> **Deployment Considerations:**
+> - **Regions with HOBO support**: When `hosted_on_behalf_of_public_ip_enabled = true`, Azure ignores any public IP configuration during initial gateway creation
+> - **Regions without HOBO support**: You must set `hosted_on_behalf_of_public_ip_enabled = false` and provide explicit public IP resources
+> - **Existing gateways**: Attempting to modify public IP configuration on existing ExpressRoute gateways in HOBO-enabled regions may result in "Internal Server Error" from Azure ARM
+>
+> **Workaround Implementation**: This module includes logic to conditionally exclude public IP assignment when HOBO is enabled, preventing configuration conflicts during subsequent Terraform runs.
+>
+> **Check regional availability** before deployment by consulting Azure documentation or testing in your target region.
+
+## What is Hosted On Behalf Of Public IP?
+
+The "Hosted On Behalf Of" (HOBO) public IP feature allows Azure to automatically provision and manage the public IP address for your **ExpressRoute Virtual Network Gateway**. This feature is **specifically available for ExpressRoute gateways only**, not VPN gateways.
+
+**Key Benefits:**
+- **Automatic IP Management**: Azure provisions the public IP automatically during ExpressRoute gateway creation
+- **Simplified Configuration**: No need to pre-create or manage public IP resources for ExpressRoute gateways
+- **Cost Optimization**: Reduces the number of resources you need to manage
+- **Regional Availability**: Available in supported Azure regions (like UK South used in this example)
+
+> **Important**: This feature is **only available for ExpressRoute Virtual Network Gateways**. VPN gateways still require explicit public IP resource creation and management.
+
+## Key Features Demonstrated
+
+- **Azure-Managed Public IP**: No need to create or manage public IP resources for ExpressRoute gateways
+- **ExpressRoute-Specific**: HOBO feature is only available for ExpressRoute gateways, not VPN gateways
+- **Simplified Configuration**: Streamlined Terraform configuration for ExpressRoute deployments
+- **Regional Deployment**: Deployed to UK South region
+- **Cost Optimization**: Reduced resource management overhead for ExpressRoute scenarios
+- **AzAPI Provider**: Uses AzAPI provider for advanced Azure Resource Manager features and future-proofing
+
+```hcl
+resource "random_id" "id" {
+  byte_length = 4
+}
+
+locals {
+  location = "uksouth"
+}
+
+resource "azurerm_resource_group" "rg" {
+  location = local.location
+  name     = "rg-vnetgateway-hobo-${random_id.id.hex}"
+}
+
+resource "azurerm_virtual_network" "vnet" {
+  location            = azurerm_resource_group.rg.location
+  name                = "vnet-hobo-${random_id.id.hex}"
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["10.0.0.0/16"]
+}
+
+# ExpressRoute Virtual Network Gateway with Azure-managed public IP (HOBO)
+module "vgw" {
+  source = "../.."
+
+  location                              = azurerm_resource_group.rg.location
+  name                                  = "vgw-hobo-${random_id.id.hex}"
+  hosted_on_behalf_of_public_ip_enabled = true      # Workaround to use Azure-managed public IP for ExpressRoute gateways, and remove the public IP resource creation and attachment.
+  sku                                   = "ErGw1AZ" # ExpressRoute gateway SKU
+  subnet_address_prefix                 = "10.0.1.0/24"
+  tags = {
+    environment  = "demo"
+    purpose      = "expressroute-hobo-ip-example"
+    gateway_type = "ExpressRoute"
+  }
+  type               = "ExpressRoute" # HOBO only available for ExpressRoute
+  virtual_network_id = azurerm_virtual_network.vnet.id
+}
+```
+
+<!-- markdownlint-disable MD033 -->
+## Requirements
+
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.116, < 5.0)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0, < 4.0.0)
+
+## Resources
+
+The following resources are used by this module:
+
+- [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
+- [random_id.id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
+
+<!-- markdownlint-disable MD013 -->
+## Required Inputs
+
+No required inputs.
+
+## Optional Inputs
+
+No optional inputs.
+
+## Outputs
+
+The following outputs are exported:
+
+### <a name="output_gateway_subnet_id"></a> [gateway\_subnet\_id](#output\_gateway\_subnet\_id)
+
+Description: The ID of the Gateway Subnet used by the ExpressRoute gateway
+
+### <a name="output_hosted_on_behalf_of_public_ip_note"></a> [hosted\_on\_behalf\_of\_public\_ip\_note](#output\_hosted\_on\_behalf\_of\_public\_ip\_note)
+
+Description: Information about the Azure-managed public IP for ExpressRoute gateways
+
+### <a name="output_public_ip_addresses"></a> [public\_ip\_addresses](#output\_public\_ip\_addresses)
+
+Description: Public IP addresses created by the module (empty when using hosted\_on\_behalf\_of\_public\_ip\_enabled for ExpressRoute)
+
+### <a name="output_virtual_network_gateway_id"></a> [virtual\_network\_gateway\_id](#output\_virtual\_network\_gateway\_id)
+
+Description: The ID of the ExpressRoute Virtual Network Gateway with Azure-managed public IP
+
+### <a name="output_virtual_network_gateway_name"></a> [virtual\_network\_gateway\_name](#output\_virtual\_network\_gateway\_name)
+
+Description: The name of the ExpressRoute Virtual Network Gateway
+
+## Modules
+
+The following Modules are called:
+
+### <a name="module_vgw"></a> [vgw](#module\_vgw)
+
+Source: ../..
+
+Version:
+
+## Important Notes
+
+- **ExpressRoute Only**: This feature is **exclusively available for ExpressRoute Virtual Network Gateways**, not VPN gateways
+- This feature must be configured during initial ExpressRoute gateway deployment
+- The public IP address is managed by Azure and not visible as a separate resource in your subscription
+- **AzAPI Provider**: This example uses the AzAPI provider for direct access to Azure ARM REST APIs and advanced properties
+
+## HOBO Regional Rollout - Important Mitigation
+
+### 500 Internal Server Error Issue
+
+If you encounter a **500 Internal Server Error** when running `terraform plan` or `terraform apply` on existing ExpressRoute gateways, this is likely due to the HOBO feature being rolled out to your region after your gateway was initially deployed.
+
+**Root Cause**: Terraform attempts to add a public IP configuration to an existing ExpressRoute gateway in a HOBO-enabled region, which Azure rejects with an internal server error.
+
+### Mitigation Steps for Existing Gateways
+
+If you have an existing ExpressRoute gateway deployed before HOBO rollout in your region:
+
+1. **Update your configuration** to enable HOBO:
+   ```hcl
+   module "vgw" {
+     source = "../.."
+
+     type = "ExpressRoute"
+     hosted_on_behalf_of_public_ip_enabled = true  # Add this line
+     # Remove any explicit public IP configurations
+   }
+   ```
+
+2. **Plan and apply** the changes - the module will automatically handle the public IP removal and destruction when HOBO is enabled.
+
+For more information about Azure Virtual Network Gateway configuration options, see the [main module documentation](../../README.md).
+
+# Usage
+
+Ensure you have Terraform installed and the Azure CLI authenticated to your Azure subscription.
+
+Navigate to the directory containing this configuration and run:
+
+```pwsh
+terraform init
+terraform plan
+terraform apply
+```
+<!-- markdownlint-disable-next-line MD041 -->
+## Data Collection
+
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+
+## AVM Versioning Notice
+
+Major version Zero (0.y.z) is for initial development. Anything MAY change at any time. The module SHOULD NOT be considered stable till at least it is major version one (1.0.0) or greater. Changes will always be via new versions being published and no changes will be made to existing published versions. For more details please go to [Sem Ver](https://semver.org/)
+<!-- END_TF_DOCS -->
