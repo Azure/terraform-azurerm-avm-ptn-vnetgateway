@@ -21,7 +21,7 @@ output "public_ip_addresses" {
 
 output "resource_id" {
   description = "The ID of the Virtual Network Gateway."
-  value       = azurerm_virtual_network_gateway.vgw.id
+  value       = azapi_resource.vgw.id
 }
 
 output "route_table" {
@@ -44,9 +44,9 @@ output "subnet" {
 output "virtual_network_gateway" {
   description = "A curated output of the Virtual Network Gateway created by this module."
   value = {
-    bgp_settings = try(azurerm_virtual_network_gateway.vgw.bgp_settings, null)
-    id           = azurerm_virtual_network_gateway.vgw.id
-    name         = azurerm_virtual_network_gateway.vgw.name
+    bgp_settings = try(azapi_resource.vgw.output.properties.bgpSettings, null)
+    id           = azapi_resource.vgw.id
+    name         = azapi_resource.vgw.name
   }
 }
 

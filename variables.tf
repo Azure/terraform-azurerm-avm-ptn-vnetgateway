@@ -125,6 +125,13 @@ variable "express_route_virtual_wan_traffic_enabled" {
   nullable    = false
 }
 
+variable "hosted_on_behalf_of_public_ip_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether or not to attach a Public IP Address for the Virtual Network Gateway. ExpressRoute Gateways are implementing HOBO (hosted on behalf of) public IPs. This is a breaking change and requires the public IP to be turned off and not assigned."
+  nullable    = false
+}
+
 variable "ip_configurations" {
   type = map(object({
     name                          = optional(string, null)
