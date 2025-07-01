@@ -28,7 +28,7 @@ locals {
   azurerm_virtual_network_gateway = {
     bgp_settings = {
       asn         = try(var.vpn_bgp_settings.asn, 65515)
-      peer_weight = try(var.vpn_bgp_settings.peer_weight, null)
+      peer_weight = try(var.vpn_bgp_settings.peer_weight, 0)
       peering_addresses = {
         for ip_configuration_key, ip_configuration in local.ip_configurations : ip_configuration_key => {
           ip_configuration_name = ip_configuration.name
@@ -89,7 +89,7 @@ locals {
     vpnType                         = var.type == "Vpn" ? var.vpn_type : "RouteBased"
     activeActive                    = var.type == "Vpn" && var.vpn_active_active_enabled == true ? true : false
     enableBgp                       = var.type == "Vpn" && var.vpn_bgp_enabled == true ? true : false
-    vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : "None"
+    vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : null
     enablePrivateIpAddress          = var.type == "Vpn" && var.vpn_private_ip_address_enabled == true ? true : false
     enableBgpRouteTranslationForNat = var.type == "Vpn" && var.vpn_bgp_route_translation_for_nat_enabled == true ? true : null
     enableDnsForwarding             = var.type == "Vpn" && var.vpn_dns_forwarding_enabled == true ? true : null
