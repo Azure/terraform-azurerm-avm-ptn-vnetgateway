@@ -55,7 +55,7 @@ resource "azapi_resource" "vgw" {
   location  = var.location
   name      = var.name
   parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.virtual_network_resource_group_name}"
-  type      = "Microsoft.Network/virtualNetworkGateways@2024-05-01"
+  type      = "Microsoft.Network/virtualNetworkGateways@2024-07-01"
   body = {
     extendedLocation = local.extended_location
     properties       = local.virtual_network_gateway_properties_filtered

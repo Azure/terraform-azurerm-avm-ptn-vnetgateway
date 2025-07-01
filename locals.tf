@@ -86,11 +86,11 @@ locals {
       }
     ]
     # Dynamic VPN-specific properties
-    vpnType                         = var.type == "Vpn" ? var.vpn_type : null
-    activeActive                    = var.type == "Vpn" && var.vpn_active_active_enabled == true ? true : null
-    enableBgp                       = var.type == "Vpn" && var.vpn_bgp_enabled == true ? true : null
-    vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : null
-    enablePrivateIpAddress          = var.type == "Vpn" && var.vpn_private_ip_address_enabled == true ? true : null
+    vpnType                         = var.type == "Vpn" ? var.vpn_type : "RouteBased"
+    activeActive                    = var.type == "Vpn" && var.vpn_active_active_enabled == true ? true : false
+    enableBgp                       = var.type == "Vpn" && var.vpn_bgp_enabled == true ? true : false
+    vpnGatewayGeneration            = var.type == "Vpn" && var.vpn_generation != null ? var.vpn_generation : "None"
+    enablePrivateIpAddress          = var.type == "Vpn" && var.vpn_private_ip_address_enabled == true ? true : false
     enableBgpRouteTranslationForNat = var.type == "Vpn" && var.vpn_bgp_route_translation_for_nat_enabled == true ? true : null
     enableDnsForwarding             = var.type == "Vpn" && var.vpn_dns_forwarding_enabled == true ? true : null
     disableIPSecReplayProtection    = var.type == "Vpn" && var.vpn_ip_sec_replay_protection_enabled == false ? true : null
