@@ -166,13 +166,19 @@ locals {
       ]
 
       # Virtual Network Gateway Client Connections
-      virtualNetworkGatewayClientConnections = [
+      vngClientConnectionConfigurations = [
         for client_conn in var.vpn_point_to_site.virtual_network_gateway_client_connections : {
           name = client_conn.name
-          vpnClientAddressPools = [{
-            addressPrefixes = client_conn.address_prefixes
-          }]
-          policyGroupNames = client_conn.policy_group_names
+          properties = {
+            vpnClientAddressPool = {
+              addressPrefixes = client_conn.address_prefixes
+            }
+            virtualNetworkGatewayPolicyGroups = [
+              for policy_group_name in client_conn.policy_group_names : {
+                id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.virtual_network_resource_group_name}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/virtualNetworkGatewayPolicyGroups/${policy_group_name}"
+              }
+            ]
+          }
         }
       ]
     } : null
