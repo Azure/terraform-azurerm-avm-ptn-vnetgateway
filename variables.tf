@@ -13,6 +13,7 @@ variable "parent_id" {
   type        = string
   description = "The id of the resource group in which to create the Virtual Network Gateway and associated resources."
   nullable    = false
+
   validation {
     condition     = can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+$", var.parent_id))
     error_message = "parent_id must be a valid resource group id."
