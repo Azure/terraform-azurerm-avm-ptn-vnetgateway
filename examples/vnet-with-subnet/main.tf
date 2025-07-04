@@ -51,8 +51,9 @@ resource "azurerm_public_ip" "public_ip" {
 module "vgw_vpn" {
   source = "../.."
 
-  location = local.location
-  name     = "vgw-vpn-${random_id.id.hex}"
+  location  = local.location
+  name      = "vgw-vpn-${random_id.id.hex}"
+  parent_id = azurerm_resource_group.rg.id
   ip_configurations = {
     "ip_config_01" = {
       name            = "vnetGatewayConfig01"
@@ -90,14 +91,14 @@ module "vgw_vpn" {
 module "vgw_er" {
   source = "../.."
 
-  location = local.location
-  name     = "vgw-ex-${random_id.id.hex}"
+  location  = local.location
+  name      = "vgw-ex-${random_id.id.hex}"
+  parent_id = azurerm_resource_group.rg_three.id
   ip_configurations = {
     ip_config_01 = {
       name = "vnetGatewayConfig01"
     }
   }
-  resource_group_name               = azurerm_resource_group.rg_three.name
   sku                               = "ErGw1AZ"
   subnet_creation_enabled           = false
   type                              = "ExpressRoute"

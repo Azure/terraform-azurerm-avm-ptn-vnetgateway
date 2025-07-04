@@ -54,7 +54,7 @@ resource "azurerm_public_ip" "vgw" {
 resource "azapi_resource" "vgw" {
   location  = var.location
   name      = var.name
-  parent_id = local.resource_group_id
+  parent_id = var.parent_id
   type      = "Microsoft.Network/virtualNetworkGateways@2024-07-01"
   body = {
     extendedLocation = local.extended_location
@@ -70,9 +70,6 @@ resource "azapi_resource" "vgw" {
     }
   }
 }
-
-# Add data source for current Azure client configuration
-data "azurerm_client_config" "current" {}
 
 # Handle migration from azurerm_virtual_network_gateway to azapi_resource
 moved {

@@ -104,7 +104,7 @@ locals {
       peerWeight = local.azurerm_virtual_network_gateway.bgp_settings.peer_weight
       bgpPeeringAddresses = [
         for key, peering_addr in local.azurerm_virtual_network_gateway.bgp_settings.peering_addresses : {
-          ipconfigurationId    = "${local.resource_group_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
+          ipconfigurationId    = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/ipConfigurations/${peering_addr.ip_configuration_name}"
           customBgpIpAddresses = peering_addr.apipa_addresses
         }
       ]
@@ -175,7 +175,7 @@ locals {
             }
             virtualNetworkGatewayPolicyGroups = [
               for policy_group_name in client_conn.policy_group_names : {
-                id = "${local.resource_group_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/virtualNetworkGatewayPolicyGroups/${policy_group_name}"
+                id = "${var.parent_id}/providers/Microsoft.Network/virtualNetworkGateways/${var.name}/virtualNetworkGatewayPolicyGroups/${policy_group_name}"
               }
             ]
           }
@@ -209,10 +209,8 @@ locals {
   }
 }
 locals {
-  resource_group_id                   = var.subscription_id != null ? "/subscriptions/${var.subscription_id}/resourceGroups/${local.resource_group_name}" : "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.resource_group_name}"
-  resource_group_name                 = var.resource_group_name != null ? var.resource_group_name : local.virtual_network_resource_group_name
-  virtual_network_name                = var.subnet_creation_enabled ? basename(var.virtual_network_id) : ""
-  virtual_network_resource_group_name = var.subnet_creation_enabled ? split("/", var.virtual_network_id)[4] : split("/", var.virtual_network_gateway_subnet_id)[4]
+  resource_group_name  = provider::azapi::parse_resource_id("Microsoft.Resources/resourceGroups", var.parent_id).resource_group_name
+  virtual_network_name = var.subnet_creation_enabled ? basename(var.virtual_network_id) : ""
 }
 locals {
   default_ip_configuration = {

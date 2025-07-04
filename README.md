@@ -76,7 +76,6 @@ The following resources are used by this module:
 - [azurerm_virtual_network_gateway_connection.vgw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_gateway_connection) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
-- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/data-sources/module_source) (data source)
 
@@ -94,6 +93,12 @@ Type: `string`
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: The name of the Virtual Network Gateway.
+
+Type: `string`
+
+### <a name="input_parent_id"></a> [parent\_id](#input\_parent\_id)
+
+Description: The id of the resource group in which to create the Virtual Network Gateway and associated resources.
 
 Type: `string`
 
@@ -375,14 +380,6 @@ map(object({
 
 Default: `{}`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
-
-Description: The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used.
-
-Type: `string`
-
-Default: `null`
-
 ### <a name="input_route_table_bgp_route_propagation_enabled"></a> [route\_table\_bgp\_route\_propagation\_enabled](#input\_route\_table\_bgp\_route\_propagation\_enabled)
 
 Description: Whether or not to enable BGP route propagation on the Route Table.
@@ -446,14 +443,6 @@ Description: Whether or not to create a subnet for the Virtual Network Gateway.
 Type: `bool`
 
 Default: `true`
-
-### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
-
-Description: The ID of the subscription for the Virtual Network Gateway resource. This is used to provide a deterministic parent\_id for the azapi resource. If not specified, the current subscription will be used.
-
-Type: `string`
-
-Default: `null`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

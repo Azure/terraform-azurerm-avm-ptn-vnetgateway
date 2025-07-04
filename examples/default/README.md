@@ -29,6 +29,7 @@ module "vgw" {
 
   location              = azurerm_resource_group.rg.location
   name                  = "vgw-${random_id.id.hex}"
+  parent_id             = azurerm_resource_group.rg.id
   subnet_address_prefix = "10.0.1.0/24"
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }

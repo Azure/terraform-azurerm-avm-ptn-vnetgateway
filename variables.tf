@@ -9,6 +9,12 @@ variable "name" {
   description = "The name of the Virtual Network Gateway."
 }
 
+variable "parent_id" {
+  type        = string
+  description = "The id of the resource group in which to create the Virtual Network Gateway and associated resources."
+  nullable    = false
+}
+
 variable "edge_zone" {
   type        = string
   default     = null
@@ -313,12 +319,6 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   }
 }
 
-variable "resource_group_name" {
-  type        = string
-  default     = null
-  description = "The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used."
-}
-
 variable "route_table_bgp_route_propagation_enabled" {
   type        = bool
   default     = true
@@ -376,12 +376,6 @@ variable "subnet_creation_enabled" {
   default     = true
   description = "Whether or not to create a subnet for the Virtual Network Gateway."
   nullable    = false
-}
-
-variable "subscription_id" {
-  type        = string
-  default     = null
-  description = "The ID of the subscription for the Virtual Network Gateway resource. This is used to provide a deterministic parent_id for the azapi resource. If not specified, the current subscription will be used."
 }
 
 variable "tags" {
