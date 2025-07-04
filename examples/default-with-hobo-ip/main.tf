@@ -24,6 +24,7 @@ module "vgw" {
 
   location                              = azurerm_resource_group.rg.location
   name                                  = "vgw-hobo-${random_id.id.hex}"
+  parent_id                             = azurerm_resource_group.rg.id
   hosted_on_behalf_of_public_ip_enabled = true      # Workaround to use Azure-managed public IP for ExpressRoute gateways, and remove the public IP resource creation and attachment.
   sku                                   = "ErGw1AZ" # ExpressRoute gateway SKU
   subnet_address_prefix                 = "10.0.1.0/24"

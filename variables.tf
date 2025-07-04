@@ -9,6 +9,17 @@ variable "name" {
   description = "The name of the Virtual Network Gateway."
 }
 
+variable "parent_id" {
+  type        = string
+  description = "The id of the resource group in which to create the Virtual Network Gateway and associated resources."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^/subscriptions/[^/]+/resourceGroups/[^/]+$", var.parent_id))
+    error_message = "parent_id must be a valid resource group id."
+  }
+}
+
 variable "edge_zone" {
   type        = string
   default     = null
@@ -313,12 +324,6 @@ Map of Local Network Gateways and Virtual Network Gateway Connections to create 
   }
 }
 
-variable "resource_group_name" {
-  type        = string
-  default     = null
-  description = "The name of the resource group in which to create the Virtual Network Gateway. If not specified, the resource group of the Virtual Network will be used."
-}
-
 variable "route_table_bgp_route_propagation_enabled" {
   type        = bool
   default     = true
@@ -413,6 +418,10 @@ variable "virtual_network_gateway_subnet_id" {
     condition     = var.subnet_creation_enabled ? var.virtual_network_gateway_subnet_id == null : var.virtual_network_gateway_subnet_id != null
     error_message = "virtual_network_gateway_subnet_id must be supplied when subnet_creation_enabled is false and not when it is true."
   }
+  validation {
+    condition     = var.virtual_network_gateway_subnet_id == null || startswith(var.virtual_network_gateway_subnet_id, var.parent_id)
+    error_message = "virtual_network_gateway_subnet_id must be in the same resource group as the Virtual Network Gateway."
+  }
 }
 
 variable "virtual_network_id" {
@@ -427,6 +436,10 @@ variable "virtual_network_id" {
   validation {
     condition     = var.subnet_creation_enabled ? var.virtual_network_id != null : var.virtual_network_id == null
     error_message = "virtual_network_id must be supplied when subnet_creation_enabled is true and not when it is false."
+  }
+  validation {
+    condition     = var.virtual_network_id == null || startswith(var.virtual_network_id, var.parent_id)
+    error_message = "virtual_network_id must be in the same resource group as the Virtual Network Gateway."
   }
 }
 

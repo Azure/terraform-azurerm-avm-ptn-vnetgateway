@@ -26,11 +26,6 @@ resource "azurerm_resource_group" "rg_two" {
   name     = "rg-vnetgateway-${random_id.id.hex}-02"
 }
 
-resource "azurerm_resource_group" "rg_three" {
-  location = local.location
-  name     = "rg-vnetgateway-${random_id.id.hex}-03"
-}
-
 resource "azurerm_virtual_network" "vnet" {
   location            = azurerm_resource_group.rg.location
   name                = "vnet-prod"
@@ -57,8 +52,9 @@ resource "azurerm_public_ip" "public_ip" {
 module "vgw_vpn" {
   source = "../.."
 
-  location = local.location
-  name     = "vgw-vpn-${random_id.id.hex}"
+  location  = local.location
+  name      = "vgw-vpn-${random_id.id.hex}"
+  parent_id = azurerm_resource_group.rg.id
   ip_configurations = {
     "ip_config_01" = {
       name            = "vnetGatewayConfig01"
@@ -96,14 +92,14 @@ module "vgw_vpn" {
 module "vgw_er" {
   source = "../.."
 
-  location = local.location
-  name     = "vgw-ex-${random_id.id.hex}"
+  location  = local.location
+  name      = "vgw-ex-${random_id.id.hex}"
+  parent_id = azurerm_resource_group.rg.id
   ip_configurations = {
     ip_config_01 = {
       name = "vnetGatewayConfig01"
     }
   }
-  resource_group_name               = azurerm_resource_group.rg_three.name
   sku                               = "ErGw1AZ"
   subnet_creation_enabled           = false
   type                              = "ExpressRoute"
@@ -128,7 +124,6 @@ The following resources are used by this module:
 
 - [azurerm_public_ip.public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_resource_group.rg_three](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_resource_group.rg_two](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.gateway_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
