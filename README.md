@@ -447,6 +447,14 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id)
+
+Description: The ID of the subscription for the Virtual Network Gateway resource. This is used to provide a deterministic parent\_id for the azapi resource. If not specified, the current subscription will be used.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: Tags to apply to the Virtual Network Gateway.
