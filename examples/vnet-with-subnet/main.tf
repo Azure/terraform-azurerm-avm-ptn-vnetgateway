@@ -20,11 +20,6 @@ resource "azurerm_resource_group" "rg_two" {
   name     = "rg-vnetgateway-${random_id.id.hex}-02"
 }
 
-resource "azurerm_resource_group" "rg_three" {
-  location = local.location
-  name     = "rg-vnetgateway-${random_id.id.hex}-03"
-}
-
 resource "azurerm_virtual_network" "vnet" {
   location            = azurerm_resource_group.rg.location
   name                = "vnet-prod"
@@ -93,7 +88,7 @@ module "vgw_er" {
 
   location  = local.location
   name      = "vgw-ex-${random_id.id.hex}"
-  parent_id = azurerm_resource_group.rg_three.id
+  parent_id = azurerm_resource_group.rg.id
   ip_configurations = {
     ip_config_01 = {
       name = "vnetGatewayConfig01"
