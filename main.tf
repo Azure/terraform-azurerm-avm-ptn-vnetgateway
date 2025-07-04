@@ -3,7 +3,7 @@ resource "azurerm_subnet" "vgw" {
 
   address_prefixes     = [var.subnet_address_prefix]
   name                 = "GatewaySubnet"
-  resource_group_name  = local.virtual_network_resource_group_name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = local.virtual_network_name
 }
 
@@ -12,7 +12,7 @@ resource "azurerm_route_table" "vgw" {
 
   location                      = var.location
   name                          = coalesce(var.route_table_name, "rt-${var.name}")
-  resource_group_name           = coalesce(var.route_table_resource_group_name, local.virtual_network_resource_group_name)
+  resource_group_name           = coalesce(var.route_table_resource_group_name, local.resource_group_name)
   bgp_route_propagation_enabled = var.route_table_bgp_route_propagation_enabled
   tags                          = merge(var.tags, var.route_table_tags)
 }
@@ -35,7 +35,7 @@ resource "azurerm_public_ip" "vgw" {
   allocation_method       = each.value.allocation_method
   location                = var.location
   name                    = each.value.name
-  resource_group_name     = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
+  resource_group_name     = coalesce(each.value.resource_group_name, local.resource_group_name)
   ddos_protection_mode    = each.value.ddos_protection_mode
   ddos_protection_plan_id = each.value.ddos_protection_plan_id
   domain_name_label       = each.value.domain_name_label
@@ -85,7 +85,7 @@ resource "azurerm_local_network_gateway" "vgw" {
 
   location            = var.location
   name                = coalesce(each.value.name, "lgw-${var.name}-${each.key}")
-  resource_group_name = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
+  resource_group_name = coalesce(each.value.resource_group_name, local.resource_group_name)
   address_space       = each.value.address_space
   gateway_address     = each.value.gateway_address
   gateway_fqdn        = each.value.gateway_fqdn
@@ -107,7 +107,7 @@ resource "azurerm_virtual_network_gateway_connection" "vgw" {
 
   location                           = var.location
   name                               = coalesce(each.value.name, "con-${var.name}-${each.key}")
-  resource_group_name                = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
+  resource_group_name                = coalesce(each.value.resource_group_name, local.resource_group_name)
   type                               = each.value.type
   virtual_network_gateway_id         = azapi_resource.vgw.id
   authorization_key                  = try(local.azurerm_virtual_network_gateway_connection_sensitive[each.key].authorization_key, null)
@@ -165,7 +165,7 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
 
   express_route_circuit_name    = each.value.express_route_circuit_name
   peering_type                  = each.value.peering_type
-  resource_group_name           = coalesce(each.value.resource_group_name, local.virtual_network_resource_group_name)
+  resource_group_name           = coalesce(each.value.resource_group_name, local.resource_group_name)
   vlan_id                       = each.value.vlan_id
   ipv4_enabled                  = each.value.ipv4_enabled
   peer_asn                      = each.value.peer_asn
