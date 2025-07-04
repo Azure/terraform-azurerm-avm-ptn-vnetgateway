@@ -378,6 +378,12 @@ variable "subnet_creation_enabled" {
   nullable    = false
 }
 
+variable "subscription_id" {
+  type        = string
+  default     = null
+  description = "The ID of the subscription for the Virtual Network Gateway resource. This is used to provide a deterministic parent_id for the azapi resource. If not specified, the current subscription will be used."
+}
+
 variable "tags" {
   type        = map(string)
   default     = null
