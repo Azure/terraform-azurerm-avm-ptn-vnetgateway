@@ -69,6 +69,10 @@ resource "azapi_resource" "vgw" {
       error_message = "An active-active gateway requires at least two IP configurations."
     }
   }
+  delete_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  read_headers   = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  update_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  create_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 }
 
 # Handle migration from azurerm_virtual_network_gateway to azapi_resource
