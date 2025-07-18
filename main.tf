@@ -60,8 +60,12 @@ resource "azapi_resource" "vgw" {
     extendedLocation = local.extended_location
     properties       = local.virtual_network_gateway_properties_filtered
   }
+  create_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  delete_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  read_headers           = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   response_export_values = ["*"]
   tags                   = var.tags
+  update_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   lifecycle {
     precondition {
@@ -69,10 +73,41 @@ resource "azapi_resource" "vgw" {
       error_message = "An active-active gateway requires at least two IP configurations."
     }
   }
-  delete_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers   = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  update_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  create_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+}
+
+resource "azurerm_monitor_diagnostic_setting" "vgw" {
+  for_each = var.diagnostic_settings_virtual_network_gateway
+
+  name                           = each.value.name != null ? each.value.name : "diag-${var.name}"
+  target_resource_id             = azapi_resource.vgw.id
+  eventhub_authorization_rule_id = each.value.event_hub_authorization_rule_resource_id
+  eventhub_name                  = each.value.event_hub_name
+  log_analytics_destination_type = each.value.log_analytics_destination_type
+  log_analytics_workspace_id     = each.value.workspace_resource_id
+  partner_solution_id            = each.value.marketplace_partner_resource_id
+  storage_account_id             = each.value.storage_account_resource_id
+
+  dynamic "enabled_log" {
+    for_each = each.value.log_categories
+
+    content {
+      category = enabled_log.value
+    }
+  }
+  dynamic "enabled_log" {
+    for_each = each.value.log_groups
+
+    content {
+      category_group = enabled_log.value
+    }
+  }
+  dynamic "metric" {
+    for_each = each.value.metric_categories
+
+    content {
+      category = metric.value
+    }
+  }
 }
 
 # Handle migration from azurerm_virtual_network_gateway to azapi_resource
