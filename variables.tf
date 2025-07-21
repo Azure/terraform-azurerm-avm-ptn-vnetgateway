@@ -464,7 +464,7 @@ variable "virtual_network_gateway_subnet_id" {
     error_message = "virtual_network_gateway_subnet_id must be supplied when subnet_creation_enabled is false and not when it is true."
   }
   validation {
-    condition     = var.virtual_network_gateway_subnet_id == null || startswith(var.virtual_network_gateway_subnet_id, var.parent_id)
+    condition     = var.virtual_network_gateway_subnet_id == null ? true : startswith(var.virtual_network_gateway_subnet_id, var.parent_id)
     error_message = "virtual_network_gateway_subnet_id must be in the same resource group as the Virtual Network Gateway."
   }
 }
@@ -483,7 +483,7 @@ variable "virtual_network_id" {
     error_message = "virtual_network_id must be supplied when subnet_creation_enabled is true and not when it is false."
   }
   validation {
-    condition     = var.virtual_network_id == null || startswith(var.virtual_network_id, var.parent_id)
+    condition     = var.virtual_network_id == null ? true : startswith(var.virtual_network_id, var.parent_id)
     error_message = "virtual_network_id must be in the same resource group as the Virtual Network Gateway."
   }
 }
