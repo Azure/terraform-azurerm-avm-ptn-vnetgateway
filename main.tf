@@ -212,12 +212,13 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
 
   dynamic "microsoft_peering_config" {
     for_each = each.value.microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]
+    iterator = ms_peering
 
     content {
-      advertised_public_prefixes = each.value.advertised_public_prefixes
-      advertised_communities     = each.value.advertised_communities
-      customer_asn               = each.value.customer_asn
-      routing_registry_name      = each.value.routing_registry_name
+      advertised_public_prefixes = each.value.microsoft_peering_config.advertised_public_prefixes
+      advertised_communities     = each.value.microsoft_peering_config.advertised_communities
+      customer_asn               = each.value.microsoft_peering_config.customer_asn
+      routing_registry_name      = each.value.microsoft_peering_config.routing_registry_name
     }
   }
 }
