@@ -212,7 +212,6 @@ resource "azurerm_express_route_circuit_peering" "vgw" {
 
   dynamic "microsoft_peering_config" {
     for_each = each.value.microsoft_peering_config == null ? [] : ["MicrosoftPeeringConfig"]
-    iterator = ms_peering
 
     content {
       advertised_public_prefixes = each.value.microsoft_peering_config.advertised_public_prefixes
