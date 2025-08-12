@@ -66,6 +66,13 @@ resource "azapi_resource" "vgw" {
   response_export_values = ["*"]
   tags                   = var.tags
   update_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  
+  timeouts {
+    create = "2h"
+    read   = "5m"
+    update = "2h"
+    delete = "2h"
+  }
 
   lifecycle {
     precondition {
