@@ -152,8 +152,10 @@ locals {
       # Root Certificates
       vpnClientRootCertificates = [
         for root_cert in var.vpn_point_to_site.root_certificates : {
-          name           = root_cert.name
-          publicCertData = root_cert.public_cert_data
+          name = root_cert.name
+          properties = {
+            publicCertData = root_cert.public_cert_data
+          }
         }
       ]
 
