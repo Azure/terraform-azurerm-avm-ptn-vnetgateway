@@ -67,6 +67,13 @@ resource "azapi_resource" "vgw" {
   tags                   = var.tags
   update_headers         = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
+  timeouts {
+    create = "2h"
+    delete = "2h"
+    read   = "5m"
+    update = "2h"
+  }
+
   lifecycle {
     precondition {
       condition     = var.vpn_active_active_enabled == true && var.type == "Vpn" ? length(local.azurerm_virtual_network_gateway.ip_configuration) > 1 : true
