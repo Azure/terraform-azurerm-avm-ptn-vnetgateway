@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Virtual Network Gateway",
+  "moduleDescription": "AVM Terraform pattern module for vnetgateway.",
+  "canonicalType": "vnetgateway",
+  "owners": [],
+  "telemetryIdPrefix": "46d3xtrf.ptn.2962449"
+}
