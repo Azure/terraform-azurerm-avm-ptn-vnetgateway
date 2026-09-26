@@ -201,7 +201,7 @@ variable "ip_configurations" {
       allocation_method       = optional(string, "Static")
       sku                     = optional(string, "Standard")
       tags                    = optional(map(string), {})
-      zones                   = optional(list(number), [1, 2, 3])
+      zones                   = optional(list(number), [])
       edge_zone               = optional(string, null)
       ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
       ddos_protection_plan_id = optional(string, null)
